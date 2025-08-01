@@ -7,12 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root {
             --primary-bg: #0a0a0a;
             --secondary-bg: #121212;
@@ -30,12 +24,22 @@
             --transition: all 0.3s ease;
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background: linear-gradient(135deg, var(--primary-bg) 0%, #1a1f25 100%);
             color: var(--text-primary);
             font-family: var(--font-body);
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 80px; /* Space for bottom nav */
             position: relative;
             overflow-x: hidden;
         }
@@ -48,13 +52,15 @@
             right: 0;
             height: 300px;
             background: linear-gradient(to bottom, rgba(57, 255, 20, 0.1) 0%, transparent 100%);
-            z-index: -1;
+            z-index: 0;
         }
-
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Header Styles */
@@ -114,6 +120,8 @@
             justify-content: center;
             cursor: pointer;
             transition: var(--transition);
+            border: none;
+            color: var(--text-primary);
         }
 
         .notification-btn:hover, .user-profile:hover {
@@ -121,12 +129,106 @@
             color: var(--primary-bg);
         }
 
-        /* Dashboard Section */
+        /* Main Content Section Styling */
+        main section {
+            display: none; /* Hide all sections by default */
+        }
+
+        main section.active {
+            display: block; /* Show only the active section */
+        }
+
+        .section-title {
+            font-family: var(--font-title);
+            font-size: 24px;
+            margin: 30px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            border-left: 4px solid transparent;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(57, 255, 20, 0.1);
+        }
+
+        /* Generic Button */
+        .btn {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font-title);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            background: rgba(57, 255, 20, 0.1);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: var(--font-body);
+        }
+
+        /* --- INICIO Section --- */
         .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .user-greeting h1 {
@@ -136,24 +238,13 @@
         }
 
         .user-greeting p {
-            color: var(--text-secondary);
-            font-size: 16px;
-        }
-
-        .motivation {
-            font-style: italic;
             color: var(--accent-color);
             font-weight: 500;
             letter-spacing: 1px;
         }
 
         .current-goal {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: var(--box-shadow);
-            border-left: 4px solid var(--accent-color);
+            border-left-color: var(--accent-color);
         }
 
         .current-goal h2 {
@@ -173,9 +264,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .goal-text {
             font-size: 22px;
             font-weight: 600;
         }
@@ -195,25 +283,15 @@
             border-radius: 4px;
         }
 
-        /* Stats Section */
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
 
         .stat-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
             padding: 20px;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
         }
 
         .stat-card h3 {
@@ -239,95 +317,21 @@
             font-size: 14px;
         }
 
-        .positive {
-            color: var(--success-color);
-        }
+        .positive { color: var(--success-color); }
+        .negative { color: var(--danger-color); }
 
-        .negative {
-            color: var(--danger-color);
-        }
-
-        /* Training Section */
-        .section-title {
-            font-family: var(--font-title);
-            font-size: 24px;
-            margin: 30px 0 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .training-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--box-shadow);
-            margin-bottom: 30px;
-        }
-
-        .training-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .training-header h3 {
-            font-family: var(--font-title);
-            font-size: 20px;
-        }
-
-        .ai-edit-btn {
-            background: rgba(57, 255, 20, 0.1);
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .ai-edit-btn:hover {
-            background: var(--accent-color);
-            color: var(--primary-bg);
-        }
-
-        .protocol {
-            background: rgba(57, 255, 20, 0.05);
-            border: 1px solid rgba(57, 255, 20, 0.2);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .protocol p {
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-
-        .protocol-list {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .protocol-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
+        /* --- ENTRENAMIENTO Section --- */
         .days-container {
             display: flex;
             gap: 10px;
             margin-bottom: 25px;
             overflow-x: auto;
             padding-bottom: 10px;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .days-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
 
         .day-tab {
@@ -337,134 +341,91 @@
             cursor: pointer;
             transition: var(--transition);
             white-space: nowrap;
+            border: 1px solid transparent;
         }
 
         .day-tab.active {
             background: var(--accent-color);
             color: var(--primary-bg);
             font-weight: 600;
+            border-color: var(--accent-color);
         }
 
         .exercise-table {
             width: 100%;
             border-collapse: collapse;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .exercise-table th, .exercise-table td {
+            padding: 15px;
+            text-align: left;
+            white-space: nowrap;
         }
 
         .exercise-table th {
-            text-align: left;
-            padding: 12px 15px;
             background: rgba(255, 255, 255, 0.05);
             font-family: var(--font-title);
             font-weight: 600;
             font-size: 14px;
         }
-
-        .exercise-table td {
-            padding: 15px;
+        
+        .exercise-table tr:not(:last-child) td {
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .increase {
-            color: var(--success-color);
-            font-weight: 600;
-        }
-
-        /* Progress Section */
-        .progress-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        @media (max-width: 768px) {
-            .progress-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .progress-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--box-shadow);
-        }
-
-        .ai-analysis-btn {
-            background: rgba(57, 255, 20, 0.1);
             color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-            padding: 12px 20px;
-            border-radius: var(--border-radius);
             font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-            width: 100%;
-            justify-content: center;
         }
 
-        .ai-analysis-btn:hover {
-            background: var(--accent-color);
-            color: var(--primary-bg);
+        /* --- NUTRICION Section --- */
+        #recipe-generator-result {
+            background: rgba(57, 255, 20, 0.05);
+            border: 1px solid rgba(57, 255, 20, 0.2);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            display: none; /* Hidden by default */
+        }
+        #recipe-generator-result h4 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+        #recipe-generator-result ul {
+            list-style-position: inside;
+            padding-left: 5px;
         }
 
-        .measure-form {
+        /* --- PROGRESO Section --- */
+        .progress-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        #current-metrics-display ul {
+            list-style: none;
         }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
+        #current-metrics-display li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        #current-metrics-display li span:first-child {
             color: var(--text-secondary);
         }
-
-        .form-group input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-            color: var(--text-primary);
-            font-size: 16px;
-        }
-
-        .save-btn {
-            background: var(--accent-color);
-            color: var(--primary-bg);
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
+        #current-metrics-display li span:last-child {
             font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: var(--font-title);
-            grid-column: span 2;
         }
-
-        .save-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        /* Premium Section */
+        
+        /* --- PREMIUM Section --- */
         .premium-card {
             background: linear-gradient(135deg, #1a2a0a 0%, #0a1a0a 100%);
             border: 1px solid var(--accent-color);
-            border-radius: var(--border-radius);
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(57, 255, 20, 0.1);
-            margin-bottom: 30px;
             text-align: center;
         }
 
@@ -485,19 +446,14 @@
 
         .pricing-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin: 30px 0;
         }
 
         .pricing-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--box-shadow);
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
-            transition: var(--transition);
         }
 
         .pricing-card.featured {
@@ -542,6 +498,7 @@
             list-style: none;
             text-align: left;
             margin-bottom: 25px;
+            padding: 0;
         }
 
         .features-list li {
@@ -553,24 +510,8 @@
 
         .features-list li i {
             color: var(--accent-color);
-        }
-
-        .pricing-btn {
-            background: var(--accent-color);
-            color: var(--primary-bg);
-            border: none;
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: var(--font-title);
-            width: 100%;
-        }
-
-        .pricing-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-3px);
+            width: 20px;
+            text-align: center;
         }
 
         .payment-methods {
@@ -580,15 +521,57 @@
             margin-top: 20px;
         }
 
-        .payment-method {
-            width: 50px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            display: flex;
+        .payment-methods i {
+            font-size: 30px;
+            color: var(--text-secondary);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            margin: auto;
+            padding: 30px;
+            border: 1px solid var(--accent-color);
+            width: 90%;
+            max-width: 500px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content h2 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .close-btn {
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--text-secondary);
         }
 
         /* Bottom Navigation */
@@ -600,9 +583,10 @@
             background: var(--secondary-bg);
             display: flex;
             justify-content: space-around;
-            padding: 15px 0;
+            padding: 10px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
         }
 
         .nav-item {
@@ -611,17 +595,21 @@
             align-items: center;
             gap: 5px;
             cursor: pointer;
-            opacity: 0.7;
+            color: var(--text-secondary);
             transition: var(--transition);
+            border: none;
+            background: transparent;
+            font-family: var(--font-body);
+            width: 20%;
         }
 
         .nav-item.active {
-            opacity: 1;
             color: var(--accent-color);
+            transform: translateY(-3px);
         }
 
         .nav-item i {
-            font-size: 20px;
+            font-size: 22px;
         }
 
         .nav-item span {
@@ -630,27 +618,10 @@
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .section-title {
-                font-size: 20px;
-            }
-            
-            .measure-form {
-                grid-template-columns: 1fr;
-            }
-            
-            .save-btn {
-                grid-column: span 1;
-            }
+            .user-greeting h1 { font-size: 24px; }
+            .logo-text { font-size: 20px; }
+            .section-title { font-size: 20px; }
+            .pricing-card.featured { transform: scale(1); }
         }
     </style>
 </head>
@@ -663,351 +634,451 @@
                 <div class="logo-text">STEV<span>EN</span></div>
             </div>
             <div class="user-actions">
-                <div class="notification-btn">
+                <button class="notification-btn" aria-label="Notificaciones">
                     <i class="fas fa-bell"></i>
-                </div>
-                <div class="user-profile">
+                </button>
+                <button class="user-profile" aria-label="Perfil de usuario">
                     <i class="fas fa-user"></i>
-                </div>
+                </button>
             </div>
         </header>
 
-        <!-- Dashboard Section -->
-        <section id="dashboard">
-            <div class="dashboard-header">
-                <div class="user-greeting">
-                    <h1>Hola, Steven</h1>
-                    <p class="motivation">NO PAIN NO GAIN</p>
+        <main>
+            <!-- INICIO Section -->
+            <section id="inicio" class="active">
+                <div class="dashboard-header">
+                    <div class="user-greeting">
+                        <h1>Hola, Steven</h1>
+                        <p>Tu científico personal del fitness</p>
+                    </div>
+                    <div id="date-display" class="motivation"></div>
                 </div>
-                <div class="date-display">
-                    01 Agosto, 2025
-                </div>
-            </div>
 
-            <div class="current-goal">
-                <h2><i class="fas fa-bullseye"></i> Objetivo Actual</h2>
-                <div class="goal-content">
-                    <div class="goal-text">Máxima definición muscular</div>
-                    <div class="goal-progress">65%</div>
+                <div class="card current-goal">
+                    <h2><i class="fas fa-bullseye"></i> Objetivo Actual</h2>
+                    <div class="goal-content">
+                        <span>Máxima definición muscular</span>
+                        <span>65%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-            </div>
 
-            <div class="stats-container">
-                <div class="stat-card">
-                    <h3><i class="fas fa-weight-scale"></i> Peso Corporal</h3>
-                    <div class="stat-value">74.2 kg</div>
-                    <div class="stat-change negative">
-                        <i class="fas fa-arrow-down"></i> 1.2 kg esta semana
+                <div class="stats-container">
+                    <div class="card stat-card">
+                        <h3><i class="fas fa-weight-scale"></i> Peso Corporal</h3>
+                        <div id="metric-weight" class="stat-value">74.2 kg</div>
+                        <div class="stat-change negative"><i class="fas fa-arrow-down"></i> 1.2 kg esta semana</div>
+                    </div>
+                    <div class="card stat-card">
+                        <h3><i class="fas fa-percentage"></i> Grasa Corporal</h3>
+                        <div id="metric-bodyfat" class="stat-value">18.3%</div>
+                        <div class="stat-change negative"><i class="fas fa-arrow-down"></i> 0.5% esta semana</div>
+                    </div>
+                    <div class="card stat-card">
+                        <h3><i class="fas fa-dumbbell"></i> Fuerza Promedio</h3>
+                        <div class="stat-value">+7.5%</div>
+                        <div class="stat-change positive"><i class="fas fa-arrow-up"></i> desde el mes pasado</div>
+                    </div>
+                    <div class="card stat-card">
+                        <h3><i class="fas fa-fire"></i> Calorías Diarias</h3>
+                        <div id="metric-calories" class="stat-value">2,380</div>
+                        <div class="stat-change positive"><i class="fas fa-check"></i> Objetivo cumplido</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <h3><i class="fas fa-ruler"></i> Grasa Corporal</h3>
-                    <div class="stat-value">18.3%</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-down"></i> 0.5% esta semana
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <h3><i class="fas fa-dumbbell"></i> Fuerza Promedio</h3>
-                    <div class="stat-value">+7.5%</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i> desde el mes pasado
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <h3><i class="fas fa-fire"></i> Calorías Diarias</h3>
-                    <div class="stat-value">2,380</div>
-                    <div class="stat-change">
-                        <i class="fas fa-check"></i> Objetivo cumplido
-                    </div>
-                </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Training Section -->
-        <section id="training">
-            <h2 class="section-title"><i class="fas fa-dumbbell"></i> Protocolo de Entrenamiento</h2>
-            
-            <div class="training-card">
-                <div class="training-header">
-                    <h3>Rutina Semanal</h3>
-                    <button class="ai-edit-btn">
-                        <i class="fas fa-robot"></i> Editar con IA
-                    </button>
-                </div>
-                
-                <div class="protocol">
-                    <p>Enfoque en técnica, RIR y sobrecarga progresiva.</p>
-                    <div class="protocol-list">
-                        <div class="protocol-item">
-                            <i class="fas fa-circle-check"></i> 4-5 días/semana
-                        </div>
-                        <div class="protocol-item">
-                            <i class="fas fa-circle-check"></i> Descanso 48h por grupo
-                        </div>
-                        <div class="protocol-item">
-                            <i class="fas fa-circle-check"></i> RIR 1-2
-                        </div>
+            <!-- ENTRENAMIENTO Section -->
+            <section id="entrenamiento">
+                <h2 class="section-title"><i class="fas fa-dumbbell"></i> Entrenamiento</h2>
+                <div class="card">
+                    <div class="dashboard-header">
+                        <h3><i class="fas fa-calendar-day"></i> Tu Rutina Semanal</h3>
+                        <button id="optimize-ai-btn" class="btn btn-secondary"><i class="fas fa-wand-magic-sparkles"></i> Optimizar con IA</button>
+                    </div>
+                    <div class="days-container" id="days-tabs">
+                        <!-- Day tabs will be generated by JS -->
+                    </div>
+                    <div id="workout-details">
+                        <table class="exercise-table">
+                            <thead>
+                                <tr>
+                                    <th>Ejercicio</th>
+                                    <th>Series</th>
+                                    <th>Reps</th>
+                                    <th>RIR</th>
+                                    <th>Carga (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="exercise-tbody">
+                                <!-- Exercises will be loaded by JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                
-                <div class="days-container">
-                    <div class="day-tab active">Día 1: Empuje</div>
-                    <div class="day-tab">Día 2: Pierna</div>
-                    <div class="day-tab">Día 3: Espalda</div>
-                    <div class="day-tab">Día 4: Descanso</div>
-                    <div class="day-tab">Día 5: Hombro/Brazo</div>
-                </div>
-                
-                <table class="exercise-table">
-                    <thead>
-                        <tr>
-                            <th>Ejercicio</th>
-                            <th>Series</th>
-                            <th>Reps</th>
-                            <th>Descanso</th>
-                            <th>RIR</th>
-                            <th>Carga</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Press de Banca con Barra</td>
-                            <td>4</td>
-                            <td>6-10</td>
-                            <td>180s</td>
-                            <td>2</td>
-                            <td>72kg <span class="increase">(+2kg)</span></td>
-                        </tr>
-                        <tr>
-                            <td>Press Inclinado con Mancuernas</td>
-                            <td>3</td>
-                            <td>8-12</td>
-                            <td>120s</td>
-                            <td>1-2</td>
-                            <td>28kg c/u</td>
-                        </tr>
-                        <tr>
-                            <td>Press Militar con Barra</td>
-                            <td>4</td>
-                            <td>6-10</td>
-                            <td>150s</td>
-                            <td>2</td>
-                            <td>52kg</td>
-                        </tr>
-                        <tr>
-                            <td>Fondos en Paralelas</td>
-                            <td>3</td>
-                            <td>10-15</td>
-                            <td>90s</td>
-                            <td>1</td>
-                            <td>+10kg</td>
-                        </tr>
-                        <tr>
-                            <td>Extensiones de Tríceps</td>
-                            <td>3</td>
-                            <td>12-15</td>
-                            <td>60s</td>
-                            <td>0-1</td>
-                            <td>22kg</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+            </section>
 
-        <!-- Progress Section -->
-        <section id="progress">
-            <h2 class="section-title"><i class="fas fa-chart-line"></i> Tu Centro de Progreso</h2>
-            
-            <button class="ai-analysis-btn">
-                <i class="fas fa-robot"></i> ¡Analiza Mi Progreso con IA!
-            </button>
-            
-            <div class="progress-container">
-                <div class="progress-card">
-                    <h3>Registro de Medidas</h3>
-                    <p>01/08/2025</p>
-                    
-                    <div class="measure-form">
+            <!-- NUTRICIÓN Section -->
+            <section id="nutricion">
+                <h2 class="section-title"><i class="fas fa-apple-alt"></i> Nutrición</h2>
+                <div class="card">
+                    <h3><i class="fas fa-robot"></i> Asistente de Recetas con IA</h3>
+                    <p>Describe qué necesitas y nuestra IA creará una receta para ti.</p>
+                    <form id="recipe-generator-form">
                         <div class="form-group">
-                            <label>Peso (kg)</label>
-                            <input type="number" value="74.2">
+                            <label for="recipe-prompt">Input: "Receta alta en proteína, <400 kcal, sin lácteos"</label>
+                            <input type="text" id="recipe-prompt" placeholder="Ej: Cena rápida y baja en carbohidratos" required>
                         </div>
-                        <div class="form-group">
-                            <label>Cintura (cm)</label>
-                            <input type="number" value="82.5">
-                        </div>
-                        <div class="form-group">
-                            <label>Pecho (cm)</label>
-                            <input type="number" value="102.5">
-                        </div>
-                        <div class="form-group">
-                            <label>Brazo (cm)</label>
-                            <input type="number" value="38.7">
-                        </div>
-                        <button class="save-btn">Guardar Medidas</button>
+                        <button type="submit" class="btn"><i class="fas fa-cogs"></i> Generar Receta</button>
+                    </form>
+                    <div id="recipe-generator-result">
+                        <!-- Recipe result will be shown here -->
                     </div>
                 </div>
-                
-                <div class="progress-card">
-                    <h3>Bitácora de Notas</h3>
-                    <p>Anota tus victorias, sensaciones, ajustes...</p>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <textarea style="width: 100%; height: 150px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 15px; color: var(--text-primary); font-family: var(--font-body);" placeholder="Hoy sentí un buen bombeo en pecho. Aumenté 2kg en press banca..."></textarea>
-                    </div>
-                    <button class="save-btn">Guardar Nota</button>
+                 <div class="card">
+                    <h3><i class="fas fa-barcode"></i> Escáner de Productos</h3>
+                    <p>Escanea el código de barras de un producto para obtener su información nutricional al instante. (Función Premium)</p>
+                    <button class="btn btn-secondary" disabled><i class="fas fa-camera"></i> Iniciar Escáner</button>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Premium Section -->
-        <section id="premium">
-            <h2 class="section-title"><i class="fas fa-crown"></i> STEVEN Premium</h2>
-            
-            <div class="premium-card">
-                <h2>Desbloquea todo el potencial</h2>
-                <p>Accede a funciones avanzadas, rutinas 100% personalizadas, análisis detallados con IA y más de 500 recetas exclusivas. Conviértete en el dueño de tu transformación física.</p>
-                
-                <div class="pricing-container">
-                    <div class="pricing-card">
-                        <h3>Básico</h3>
-                        <div class="price">Gratis</div>
-                        <ul class="features-list">
-                            <li><i class="fas fa-check"></i> Registro básico de entrenos</li>
-                            <li><i class="fas fa-check"></i> 2 recetas semanales</li>
-                            <li><i class="fas fa-check"></i> Análisis simple de progreso</li>
-                            <li><i class="fas fa-times"></i> Rutinas personalizadas</li>
-                            <li><i class="fas fa-times"></i> Análisis avanzado con IA</li>
-                            <li><i class="fas fa-times"></i> Biblioteca completa</li>
-                        </ul>
-                        <button class="pricing-btn">Plan Actual</button>
+            <!-- PROGRESO Section -->
+            <section id="progreso">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> Progreso</h2>
+                <div class="progress-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-edit"></i> Registrar Nuevas Medidas</h3>
+                        <form id="progress-form">
+                            <div class="form-group">
+                                <label for="weight">Peso (kg)</label>
+                                <input type="number" id="weight" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bodyfat">Grasa Corporal (%)</label>
+                                <input type="number" id="bodyfat" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="calories">Calorías Consumidas</label>
+                                <input type="number" id="calories" required>
+                            </div>
+                            <button type="submit" class="btn"><i class="fas fa-save"></i> Guardar Medidas</button>
+                        </form>
                     </div>
-                    
-                    <div class="pricing-card featured">
-                        <h3>Premium</h3>
-                        <div class="price">$9.99 <span>/mes</span></div>
-                        <ul class="features-list">
-                            <li><i class="fas fa-check"></i> Rutinas 100% personalizadas</li>
-                            <li><i class="fas fa-check"></i> Análisis avanzado con IA</li>
-                            <li><i class="fas fa-check"></i> +500 recetas exclusivas</li>
-                            <li><i class="fas fa-check"></i> Planificador nutricional</li>
-                            <li><i class="fas fa-check"></i> Soporte prioritario</li>
-                            <li><i class="fas fa-check"></i> Sin anuncios</li>
-                        </ul>
-                        <button class="pricing-btn">Actualizar a Premium</button>
-                    </div>
-                    
-                    <div class="pricing-card">
-                        <h3>Anual</h3>
-                        <div class="price">$89.99 <span>/año</span></div>
-                        <ul class="features-list">
-                            <li><i class="fas fa-check"></i> Todas las funciones Premium</li>
-                            <li><i class="fas fa-check"></i> Ahorras 25%</li>
-                            <li><i class="fas fa-check"></i> Evaluación física trimestral</li>
-                            <li><i class="fas fa-check"></i> 2 consultas con expertos/año</li>
-                            <li><i class="fas fa-check"></i> Contenido exclusivo</li>
-                            <li><i class="fas fa-gift"></i> Guía de suplementación</li>
-                        </ul>
-                        <button class="pricing-btn">Elegir Anual</button>
+                    <div class="card">
+                        <h3><i class="fas fa-ruler-combined"></i> Métricas Actuales</h3>
+                        <div id="current-metrics-display">
+                           <ul>
+                               <li><span>Peso:</span> <span id="display-weight">74.2 kg</span></li>
+                               <li><span>Grasa Corporal:</span> <span id="display-bodyfat">18.3 %</span></li>
+                               <li><span>Calorías Hoy:</span> <span id="display-calories">2,380</span></li>
+                               <li><span>Cintura:</span> <span>82 cm</span></li>
+                               <li><span>Pecho:</span> <span>105 cm</span></li>
+                           </ul>
+                        </div>
+                         <button id="ai-analysis-btn" class="btn btn-secondary" style="width: 100%; margin-top: 20px;"><i class="fas fa-brain"></i> Generar Informe con IA</button>
                     </div>
                 </div>
-                
-                <div class="payment-methods">
-                    <div class="payment-method">
+            </section>
+
+            <!-- PREMIUM Section -->
+            <section id="premium">
+                <h2 class="section-title"><i class="fas fa-star"></i> Premium</h2>
+                <div class="card premium-card">
+                    <h2>Desbloquea Tu Máximo Potencial</h2>
+                    <p>Accede a rutinas 100% personalizadas por IA, análisis avanzado de tu progreso, una biblioteca con más de 500 recetas y soporte prioritario.</p>
+                    <div class="pricing-container">
+                        <div class="card pricing-card">
+                            <h3>Gratis</h3>
+                            <div class="price">$0<span>/mes</span></div>
+                            <ul class="features-list">
+                                <li><i class="fas fa-check"></i> Acceso a registros básicos</li>
+                                <li><i class="fas fa-check"></i> 2 recetas generadas/semana</li>
+                                <li><i class="fas fa-times"></i> Rutinas personalizadas por IA</li>
+                                <li><i class="fas fa-times"></i> Análisis avanzado de progreso</li>
+                                <li><i class="fas fa-times"></i> Soporte prioritario</li>
+                            </ul>
+                            <button class="btn btn-secondary">Plan Actual</button>
+                        </div>
+                        <div class="card pricing-card featured">
+                            <h3>Premium</h3>
+                            <div class="price">$9.99<span>/mes</span></div>
+                            <ul class="features-list">
+                                <li><i class="fas fa-check"></i> Acceso a registros básicos</li>
+                                <li><i class="fas fa-check"></i> Recetas generadas ilimitadas</li>
+                                <li><i class="fas fa-check"></i> Rutinas personalizadas por IA</li>
+                                <li><i class="fas fa-check"></i> Análisis avanzado de progreso</li>
+                                <li><i class="fas fa-check"></i> Soporte prioritario</li>
+                            </ul>
+                            <button class="btn pricing-btn">¡Hazte Premium!</button>
+                        </div>
+                    </div>
+                    <div class="payment-methods">
                         <i class="fab fa-cc-visa"></i>
-                    </div>
-                    <div class="payment-method">
                         <i class="fab fa-cc-mastercard"></i>
-                    </div>
-                    <div class="payment-method">
-                        <i class="fab fa-cc-amex"></i>
-                    </div>
-                    <div class="payment-method">
-                        <i class="fab fa-paypal"></i>
+                        <i class="fab fa-cc-paypal"></i>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </main>
     </div>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <div class="nav-item active">
+        <button class="nav-item active" data-target="inicio">
             <i class="fas fa-home"></i>
             <span>Inicio</span>
-        </div>
-        <div class="nav-item">
+        </button>
+        <button class="nav-item" data-target="entrenamiento">
             <i class="fas fa-dumbbell"></i>
-            <span>Entreno</span>
-        </div>
-        <div class="nav-item">
+            <span>Entrenar</span>
+        </button>
+        <button class="nav-item" data-target="nutricion">
             <i class="fas fa-apple-alt"></i>
             <span>Nutrición</span>
-        </div>
-        <div class="nav-item">
+        </button>
+        <button class="nav-item" data-target="progreso">
             <i class="fas fa-chart-line"></i>
             <span>Progreso</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-crown"></i>
+        </button>
+        <button class="nav-item" data-target="premium">
+            <i class="fas fa-star"></i>
             <span>Premium</span>
-        </div>
+        </button>
     </nav>
+    
+    <!-- Modal for AI messages -->
+    <div id="ai-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <p id="modal-text"></p>
+            <button id="close-modal-btn" class="btn close-btn">Entendido</button>
+        </div>
+    </div>
 
     <script>
-        // Navigation functionality
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.nav-item').forEach(nav => {
-                    nav.classList.remove('active');
-                });
-                this.classList.add('active');
-                
-                // In a real app, this would load the appropriate section
-            });
-        });
-        
-        // Day tabs functionality
-        document.querySelectorAll('.day-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.day-tab').forEach(t => {
-                    t.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-        
-        // AI buttons functionality
-        document.querySelectorAll('.ai-edit-btn, .ai-analysis-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                alert('Función de IA activada: Analizando datos y generando recomendaciones personalizadas...');
-            });
-        });
-        
-        // Save buttons functionality
-        document.querySelectorAll('.save-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const parentSection = this.closest('.progress-card');
-                if (parentSection.querySelector('textarea')) {
-                    alert('Nota guardada correctamente!');
-                } else {
-                    alert('Medidas guardadas correctamente!');
-                }
-            });
-        });
-        
-        // Premium buttons functionality
-        document.querySelectorAll('.pricing-btn').forEach(btn => {
-            if (btn.textContent !== 'Plan Actual') {
-                btn.addEventListener('click', function() {
-                    alert('Redirigiendo a página de pago seguro...');
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ELEMENTS ---
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('main section');
+            const modal = document.getElementById('ai-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            
+            // --- INITIALIZATION ---
+            setCurrentDate();
+            setupNavigation();
+            setupTrainingSection();
+            setupProgressForm();
+            setupRecipeGenerator();
+            setupAIButtons();
+
+            // --- FUNCTIONS ---
+
+            // Sets the current date on the dashboard
+            function setCurrentDate() {
+                const dateDisplay = document.getElementById('date-display');
+                const today = new Date();
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                dateDisplay.textContent = today.toLocaleDateString('es-ES', options);
+            }
+
+            // Handles bottom navigation logic
+            function setupNavigation() {
+                navItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const targetId = item.dataset.target;
+
+                        // Update active state for nav items
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        item.classList.add('active');
+
+                        // Show the target section and hide others
+                        sections.forEach(section => {
+                            if (section.id === targetId) {
+                                section.classList.add('active');
+                            } else {
+                                section.classList.remove('active');
+                            }
+                        });
+                        window.scrollTo(0, 0); // Scroll to top on new section
+                    });
                 });
             }
+
+            // Handles all logic for the training section
+            function setupTrainingSection() {
+                const daysTabsContainer = document.getElementById('days-tabs');
+                const exerciseTbody = document.getElementById('exercise-tbody');
+                const workoutData = {
+                    Lunes: [
+                        { name: 'Press Banca (Barra)', sets: '4', reps: '8-10', rir: '2', load: '72' },
+                        { name: 'Remo con Barra', sets: '4', reps: '8-10', rir: '2', load: '65' },
+                        { name: 'Press Militar (Mancuerna)', sets: '3', reps: '10-12', rir: '1', load: '20' },
+                        { name: 'Curl de Bíceps', sets: '3', reps: '12-15', rir: '1', load: '12' },
+                    ],
+                    Martes: [
+                        { name: 'Sentadilla (Barra)', sets: '4', reps: '6-8', rir: '2', load: '100' },
+                        { name: 'Peso Muerto Rumano', sets: '4', reps: '8-10', rir: '2', load: '80' },
+                        { name: 'Prensa de Piernas', sets: '3', reps: '12-15', rir: '1', load: '150' },
+                        { name: 'Elevación de Gemelos', sets: '4', reps: '15-20', rir: '1', load: '50' },
+                    ],
+                    Miércoles: [{ name: 'Descanso Activo / Cardio Ligero', sets: '-', reps: '-', rir: '-', load: '-' }],
+                    Jueves: [
+                        { name: 'Dominadas (Asistidas)', sets: '4', reps: '6-8', rir: '2', load: '-15' },
+                        { name: 'Fondos en Paralelas', sets: '4', reps: '8-10', rir: '2', load: 'BW' },
+                        { name: 'Elevaciones Laterales', sets: '4', reps: '15-20', rir: '1', load: '8' },
+                        { name: 'Press Francés', sets: '3', reps: '10-12', rir: '1', load: '25' },
+                    ],
+                    Viernes: [
+                        { name: 'Peso Muerto Convencional', sets: '3', reps: '5', rir: '3', load: '120' },
+                        { name: 'Zancadas con Mancuerna', sets: '3', reps: '10-12', rir: '2', load: '18' },
+                        { name: 'Curl Femoral', sets: '3', reps: '12-15', rir: '1', load: '40' },
+                        { name: 'Plancha Abdominal', sets: '4', reps: '60s', rir: '1', load: 'BW' },
+                    ],
+                    Sábado: [{ name: 'Cardio HIIT', sets: '8', reps: '30s/30s', rir: '1', load: '-' }],
+                    Domingo: [{ name: 'Descanso Total', sets: '-', reps: '-', rir: '-', load: '-' }],
+                };
+
+                // Create day tabs
+                Object.keys(workoutData).forEach((day, index) => {
+                    const tab = document.createElement('button');
+                    tab.className = 'day-tab';
+                    tab.textContent = day;
+                    tab.dataset.day = day;
+                    if (index === 0) tab.classList.add('active');
+                    daysTabsContainer.appendChild(tab);
+                });
+
+                // Function to load exercises for a given day
+                function loadWorkout(day) {
+                    exerciseTbody.innerHTML = '';
+                    const exercises = workoutData[day];
+                    exercises.forEach(ex => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${ex.name}</td>
+                            <td>${ex.sets}</td>
+                            <td>${ex.reps}</td>
+                            <td>${ex.rir}</td>
+                            <td data-original-load="${ex.load}">${ex.load}</td>
+                        `;
+                        exerciseTbody.appendChild(row);
+                    });
+                }
+                
+                // Event listener for day tabs
+                daysTabsContainer.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('day-tab')) {
+                        daysTabsContainer.querySelector('.active').classList.remove('active');
+                        e.target.classList.add('active');
+                        loadWorkout(e.target.dataset.day);
+                    }
+                });
+
+                // Load initial workout
+                loadWorkout('Lunes');
+            }
+
+            // Handles the progress tracking form
+            function setupProgressForm() {
+                const form = document.getElementById('progress-form');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const weight = document.getElementById('weight').value;
+                    const bodyfat = document.getElementById('bodyfat').value;
+                    const calories = document.getElementById('calories').value;
+
+                    // Update displays on Progreso page
+                    document.getElementById('display-weight').textContent = `${weight} kg`;
+                    document.getElementById('display-bodyfat').textContent = `${bodyfat} %`;
+                    document.getElementById('display-calories').textContent = calories;
+
+                    // Update displays on Inicio page
+                    document.getElementById('metric-weight').textContent = `${weight} kg`;
+                    document.getElementById('metric-bodyfat').textContent = `${bodyfat} %`;
+                    document.getElementById('metric-calories').textContent = calories;
+                    
+                    form.reset();
+                    showModal('¡Progreso Guardado!', 'Tus nuevas métricas han sido registradas exitosamente. ¡Sigue así!');
+                });
+            }
+            
+            // Handles the recipe generator form
+            function setupRecipeGenerator() {
+                const form = document.getElementById('recipe-generator-form');
+                const resultDiv = document.getElementById('recipe-generator-result');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // Simulate AI response
+                    resultDiv.innerHTML = `
+                        <h4><i class="fas fa-utensils"></i> Pechuga de Pollo al Limón con Brócoli</h4>
+                        <p><strong>Macros:</strong> 380 kcal, 45g Proteína, 15g Carbs, 15g Grasa</p>
+                        <p><strong>Ingredientes:</strong></p>
+                        <ul>
+                            <li>200g pechuga de pollo</li>
+                            <li>1 taza de brócoli</li>
+                            <li>1 limón (jugo y ralladura)</li>
+                            <li>1 cda aceite de oliva</li>
+                            <li>Ajo en polvo, sal y pimienta</li>
+                        </ul>
+                        <p><strong>Preparación:</strong> Sazona el pollo y cocínalo a la plancha. En la misma sartén, saltea el brócoli con el jugo de limón y aceite. Sirve todo junto.</p>
+                    `;
+                    resultDiv.style.display = 'block';
+                });
+            }
+
+            // Sets up AI simulation buttons
+            function setupAIButtons() {
+                document.getElementById('optimize-ai-btn').addEventListener('click', () => {
+                    showModal(
+                        'Rutina Optimizada con IA', 
+                        'Hemos analizado tu progreso y fatiga. Se sugiere aumentar la carga en el primer ejercicio para mantener la sobrecarga progresiva. ¡El cambio se ha marcado en verde!'
+                    );
+                    // Simulate optimization
+                    const firstExerciseLoadCell = document.querySelector('#exercise-tbody td:last-child');
+                    if (firstExerciseLoadCell) {
+                       const originalLoad = parseFloat(firstExerciseLoadCell.dataset.originalLoad);
+                       if (!isNaN(originalLoad)) {
+                           const newLoad = originalLoad + 2.5;
+                           firstExerciseLoadCell.innerHTML = `${originalLoad} &rarr; <span class="increase">${newLoad}*</span>`;
+                       }
+                    }
+                });
+
+                document.getElementById('ai-analysis-btn').addEventListener('click', () => {
+                    showModal(
+                        'Análisis de Progreso por IA', 
+                        '¡Excelente trabajo, Steven! Tu peso ha disminuido consistentemente mientras tu fuerza aumenta. Esto indica una recomposición corporal exitosa. Sugerencia: Considera un ligero aumento de 100-150 kcal en días de entrenamiento de pierna para potenciar la recuperación.'
+                    );
+                });
+                
+                document.querySelector('.pricing-btn').addEventListener('click', () => {
+                    showModal(
+                        'Suscripción Premium',
+                        'Estás a un paso de desbloquear todo tu potencial. Serás redirigido a una pasarela de pago segura para completar tu suscripción.'
+                    );
+                });
+            }
+
+            // --- MODAL UTILITY ---
+            function showModal(title, text) {
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-text').textContent = text;
+                modal.style.display = 'flex';
+            }
+
+            closeModalBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
         });
     </script>
 </body>
 </html>
+
