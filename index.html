@@ -3,790 +3,608 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STEVEN Fitness - Plan Premium</title>
+    <title>Plan Pro Steven - Plataforma Fitness IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { 
-            --main-red: #ff4757; 
-            --accent-orange: #ff9f1a; 
-            --accent-blue: #2d87d9;
-            --dark-bg: #101010; 
-            --card-bg-opaque: #181818; 
-            --card-bg-translucent: rgba(24, 24, 24, 0.85); 
-            --text-light: #f8f9fa; 
-            --text-dark: #a3a3a3; 
-            --premium-gold: #ffd700;
-            --premium-purple: #9b59b6;
+        /* --- NUEVA PALETA DE COLORES Y ESTILOS LLAMATIVOS --- */
+        :root {
+            --primary-blue: #007BFF;
+            --vibrant-purple: #8A2BE2;
+            --electric-cyan: #00FFFF;
+            --dark-bg: #0a0a10;
+            --card-bg: rgba(20, 20, 30, 0.7);
+            --card-border: rgba(138, 43, 226, 0.3);
+            --text-light: #e5e7eb;
+            --text-dark: #9ca3af;
+            --premium-gold: #FFD700;
         }
-        
-        body { 
+
+        body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background-color: var(--dark-bg);
+            background-image: radial-gradient(circle at 1% 1%, var(--primary-blue), transparent 25%), radial-gradient(circle at 99% 99%, var(--vibrant-purple), transparent 25%);
+            background-size: cover;
+            background-position: center center;
             background-attachment: fixed;
             color: var(--text-light);
             transition: background-image 0.4s ease-in-out;
         }
 
-        .bg-resumen {
-            background-image: linear-gradient(rgba(16, 16, 16, 0.65), rgba(16, 16, 16, 0.65)), url('https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+        .card {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            padding: 1.5rem;
+            transition: all 0.3s;
         }
-        .bg-fit-ai {
-            background-image: linear-gradient(rgba(16, 16, 16, 0.65), rgba(16, 16, 16, 0.65)), url('https://images.pexels.com/photos/4164844/pexels-photo-4164844.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+        .card:hover {
+            border-color: var(--electric-cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         }
-        .bg-nutricion {
-            background-image: linear-gradient(rgba(16, 16, 16, 0.65), rgba(16, 16, 16, 0.65)), url('https://images.pexels.com/photos/6456299/pexels-photo-6456299.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+        
+        .btn-primary {
+            background-image: linear-gradient(to right, var(--primary-blue), var(--vibrant-purple));
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
         }
-        .bg-entrenamiento {
-            background-image: linear-gradient(rgba(16, 16, 16, 0.65), rgba(16, 16, 16, 0.65)), url('https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
         }
-        .bg-progreso {
-            background-image: linear-gradient(rgba(16, 16, 16, 0.65), rgba(16, 16, 16, 0.65)), url('https://images.pexels.com/photos/2294361/pexels-photo-2294361.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
-        }
-        .bg-recursos {
-            background-image: linear-gradient(rgba(16, 16, 16, 0.65), rgba(16, 16, 16, 0.65)), url('https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+        .btn-primary:disabled {
+            background: #555;
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+            transform: none;
         }
 
-        .nav-link.active { 
-            background: linear-gradient(90deg, var(--main-red), var(--accent-orange)); 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.4);
+        .form-input, .form-textarea {
+            background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--card-border);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-light);
+            width: 100%;
+            transition: all 0.2s;
         }
-        .nav-link:not(.active) { 
-            color: var(--text-dark); 
-            transition: all 0.3s ease;
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--text-dark); }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.5);
+            border-color: var(--electric-cyan);
         }
-        .nav-link:not(.active):hover { 
-            background: rgba(255, 255, 255, 0.1); 
-            transform: translateY(-2px);
+
+        .nav-link.active {
+            background-image: linear-gradient(to right, var(--primary-blue), var(--vibrant-purple));
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .nav-link-mobile.active {
+            color: var(--electric-cyan);
+            border-top: 3px solid var(--electric-cyan);
+        }
+        .nav-link-mobile.active > span { color: var(--electric-cyan); }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loader {
+            border: 4px solid #333;
+            border-top: 4px solid var(--electric-cyan);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .premium-badge {
+            background: linear-gradient(45deg, #FFD700, #F0B400);
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .locked-feature {
+            position: relative;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .locked-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            color: var(--premium-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 1rem;
+            z-index: 10;
+            pointer-events: all;
+            cursor: pointer;
         }
         .content-section { display: none; }
         .content-section.active { display: block; }
         .chart-container { position: relative; margin: auto; height: 280px; width: 280px; }
         @media (min-width: 640px) { .chart-container { height: 320px; width: 320px; } }
-        .workout-day-btn.active { 
-            background: linear-gradient(90deg, var(--main-red), var(--accent-orange)); 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.4);
-        }
-        .workout-day-btn:not(.active) { 
-            background: #262626; 
-            color: var(--text-dark); 
-            transition: all 0.3s ease;
-        }
-        .workout-day-btn:not(.active):hover { 
-            background: #3a3a3a; 
-            border-color: #404040; 
-            transform: translateY(-2px);
-        }
-        .card { 
-            background: rgba(30, 30, 40, 0.8); 
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 12px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
-            padding: 1.5rem; 
-            transition: all 0.3s; 
-        }
-        .card:hover { 
-            border-color: var(--main-red); 
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(255, 71, 87, 0.3);
-        }
-        .nav-link-mobile.active { 
-            border-top: 2px solid var(--main-red); 
-            color: var(--main-red); 
-        }
-        .nav-link-mobile.active > span { color: var(--main-red); font-weight: 600; }
-        .form-input, .form-textarea { 
-            background-color: rgba(40, 40, 50, 0.8); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 8px; 
-            padding: 0.75rem; 
-            color: var(--text-light); 
-            width: 100%; 
-            transition: all 0.3s;
-        }
-        .form-input:focus, .form-textarea:focus { 
-            outline: none; 
-            box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.3); 
-            border-color: var(--main-red); 
-        }
-        .btn-primary { 
-            background: linear-gradient(90deg, var(--main-red), var(--accent-orange)); 
-            color: white; 
-            font-weight: bold; 
-            padding: 0.75rem 1.5rem; 
-            border-radius: 10px; 
-            transition: all 0.3s; 
-            cursor: pointer; 
-            text-align: center;
-            border: none;
-            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.4);
-        }
-        .btn-primary:hover { 
-            background: linear-gradient(90deg, #ff2e43, #ff8c00); 
-            transform: translateY(-2px);
-            box-shadow: 0 7px 15px rgba(255, 71, 87, 0.5);
-        }
-        .btn-secondary { 
-            background: rgba(60, 60, 80, 0.8); 
-            color: white; 
-            padding: 0.5rem 1rem; 
-            border-radius: 8px; 
-            transition: all 0.3s; 
-            cursor: pointer; 
-            font-size: 0.875rem; 
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .btn-secondary:hover { 
-            background: rgba(80, 80, 100, 0.8); 
-            transform: translateY(-2px);
-        }
-        .btn-premium {
-            background: linear-gradient(90deg, var(--premium-gold), var(--premium-purple));
-            color: black;
-            font-weight: bold;
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            transition: all 0.3s;
-            cursor: pointer;
-            text-align: center;
-            border: none;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-        }
-        .btn-premium:hover {
-            background: linear-gradient(90deg, #ffcc00, #8e44ad);
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(255, 215, 0, 0.5);
-        }
-        .premium-badge {
-            background: linear-gradient(90deg, var(--premium-gold), var(--premium-purple));
-            color: black;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        .premium-feature {
-            border-left: 3px solid var(--premium-gold);
-            padding-left: 0.75rem;
-        }
-        .loader { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--main-red); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .progress-bar-bg { background-color: #262626; border-radius: 0.375rem; overflow: hidden; }
-        .progress-bar { background: linear-gradient(90deg, var(--main-red), var(--accent-orange)); height: 100%; transition: width 0.5s ease-in-out; }
-        .modal-overlay { 
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.8); 
-            backdrop-filter: blur(5px); 
-            -webkit-backdrop-filter: blur(5px); 
-        }
-        .modal-container { 
-            position: relative; 
-            margin: auto; 
-            top: 50%; 
-            transform: translateY(-50%); 
-            width: 90%; 
-            max-width: 500px; 
-            padding: 25px; 
-            background: var(--card-bg-opaque); 
-            border-radius: 15px; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            text-align: center; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
-        .edit-input { background-color: #3a3a3a; border: 1px solid #5a5a5a; }
-        .floating-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 50;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--main-red), var(--accent-orange));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.5);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .floating-btn:hover {
-            transform: scale(1.1) rotate(10deg);
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.7);
-        }
-        .visitor-card {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 8px;
-            background: rgba(40, 40, 50, 0.6);
-            margin-bottom: 8px;
-            animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .visitor-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--main-red), var(--accent-blue));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-        }
-        .pulse {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #00ff00;
-            box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 255, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
+        .workout-day-btn.active { background-image: linear-gradient(to right, var(--primary-blue), var(--vibrant-purple)); color: white; }
+        .workout-day-btn:not(.active) { background-color: #262626; color: var(--text-dark); }
     </style>
 </head>
-<body class="antialiased bg-resumen">
-    <!-- Modales -->
-    <div id="login-modal" class="modal-overlay">
-        <div class="modal-container">
-            <h3 class="text-2xl font-bold text-center mb-6">Iniciar Sesión</h3>
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <input type="email" id="login-email" placeholder="Correo electrónico" class="form-input w-full" required>
-                </div>
-                <div>
-                    <input type="password" id="login-password" placeholder="Contraseña" class="form-input w-full" required>
-                </div>
-                <button type="submit" class="btn-primary w-full">Ingresar</button>
-                <div class="text-center mt-4">
-                    <p class="text-gray-400">¿No tienes cuenta? <a href="#" id="show-register" class="text-red-400 hover:underline">Regístrate aquí</a></p>
-                </div>
-            </form>
-            <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
-        </div>
+<body class="antialiased">
+
+    <!-- ===== CONTENEDOR PRINCIPAL Y MODALES ===== -->
+    <div id="app-loader" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
+        <div class="loader"></div>
     </div>
-
-    <div id="register-modal" class="modal-overlay">
-        <div class="modal-container">
-            <h3 class="text-2xl font-bold text-center mb-6">Crear Cuenta</h3>
-            <form id="register-form" class="space-y-4">
-                <div>
-                    <input type="text" id="register-name" placeholder="Nombre completo" class="form-input w-full" required>
-                </div>
-                <div>
-                    <input type="email" id="register-email" placeholder="Correo electrónico" class="form-input w-full" required>
-                </div>
-                <div>
-                    <input type="password" id="register-password" placeholder="Contraseña" class="form-input w-full" required>
-                </div>
-                <div>
-                    <input type="password" id="register-confirm" placeholder="Confirmar contraseña" class="form-input w-full" required>
-                </div>
-                <button type="submit" class="btn-primary w-full">Registrarse</button>
-                <div class="text-center mt-4">
-                    <p class="text-gray-400">¿Ya tienes cuenta? <a href="#" id="show-login" class="text-red-400 hover:underline">Inicia sesión</a></p>
-                </div>
-            </form>
-            <button id="close-register-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
-        </div>
-    </div>
-
-    <div id="premium-modal" class="modal-overlay">
-        <div class="modal-container">
-            <h3 class="text-2xl font-bold text-center mb-6">Activar Premium</h3>
-            <div class="bg-gradient-to-r from-yellow-500 to-purple-600 p-4 rounded-xl mb-6">
-                <h4 class="text-xl font-bold text-center text-black">Plan Premium - 2 Meses</h4>
-                <p class="text-center font-bold text-black">50.000 COP</p>
-            </div>
-            <div class="space-y-4">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-check-circle text-green-400"></i>
-                    <p>Acceso a todas las funciones avanzadas</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-check-circle text-green-400"></i>
-                    <p>Asesoría personalizada 24/7</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-check-circle text-green-400"></i>
-                    <p>Rutinas premium exclusivas</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-check-circle text-green-400"></i>
-                    <p>Visualización de visitantes en tiempo real</p>
-                </div>
-            </div>
-            <div class="mt-6 space-y-4">
-                <button id="buy-premium-btn" class="btn-premium w-full">Comprar Premium</button>
-                <div class="relative my-4">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-700"></div>
-                    </div>
-                    <div class="relative flex justify-center">
-                        <span class="px-3 bg-gray-800 text-sm text-gray-400">O activar con código</span>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <input type="text" id="premium-code" placeholder="Código premium" class="form-input flex-1">
-                    <button id="activate-premium-btn" class="btn-secondary">Activar</button>
-                </div>
-            </div>
-            <button id="close-premium-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
-        </div>
-    </div>
-
-    <div id="visitors-modal" class="modal-overlay">
-        <div class="modal-container">
-            <h3 class="text-2xl font-bold text-center mb-6">Usuarios Conectados</h3>
-            <div class="space-y-3" id="visitors-list">
-                <!-- Los visitantes se cargarán aquí dinámicamente -->
-            </div>
-            <button id="close-visitors-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
-        </div>
-    </div>
-
-    <!-- Floating Button -->
-    <div class="floating-btn" id="visitors-btn">
-        <i class="fas fa-users"></i>
-    </div>
-
-    <!-- ===== HEADER CON LOGO DE FISICOCULTURISTA ===== -->
-    <header class="bg-black/50 backdrop-blur-md shadow-lg sticky top-0 z-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <!-- LOGO SVG FISICOCULTURISTA -->
-                    <svg class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M6.75 6.75C8.16421 6.75 9.33333 7.91921 9.33333 9.33333C9.33333 10.7475 8.16421 11.9167 6.75 11.9167C5.33579 11.9167 4.16667 10.7475 4.16667 9.33333C4.16667 7.91921 5.33579 6.75 6.75 6.75ZM6.75 8.25C6.19772 8.25 5.75 8.70181 5.75 9.24542C5.75 9.32458 5.75 9.49167 5.75 9.49167C5.83579 10.0279 6.24188 10.4167 6.75 10.4167C7.25812 10.4167 7.66421 10.0279 7.75 9.49167C7.75 9.49167 7.75 9.32458 7.75 9.24542C7.75 8.70181 7.30228 8.25 6.75 8.25ZM20.75 11.5833C20.75 12.3923 20.0923 13.0833 19.25 13.0833C18.4077 13.0833 17.75 12.3923 17.75 11.5833C17.75 10.7744 18.4077 10.0833 19.25 10.0833C20.0923 10.0833 20.75 10.7744 20.75 11.5833ZM15.4167 4.66667C15.4167 3.85771 14.759 3.16667 13.9167 3.16667C13.0744 3.16667 12.4167 3.85771 12.4167 4.66667C12.4167 5.47562 13.0744 6.16667 13.9167 6.16667C14.759 6.16667 15.4167 5.47562 15.4167 4.66667ZM18.5 7.66667C16.9739 7.66667 15.6946 8.74608 15.4674 10.2083H15.25C14.2835 10.2083 13.4167 9.34151 13.4167 8.375V8C13.4167 7.15771 12.759 6.5 11.9167 6.5C11.0744 6.5 10.4167 7.15771 10.4167 8V12.75C10.4167 14.8211 12.0956 16.5 14.1667 16.5H14.5C14.7761 16.5 15 16.2761 15 16V13.25C15 12.6977 15.4477 12.25 16 12.25H16.25C16.8023 12.25 17.25 12.6977 17.25 13.25V16C17.25 16.2761 17.4739 16.5 17.75 16.5H18.0833C19.9603 16.5 21.5 14.9943 21.5 13.125V11.5833C21.5 9.41223 19.9943 7.66667 18.5 7.66667ZM11.1667 20.8333L10 17.25H8.25L7.08333 20.8333H11.1667Z"/>
-                    </svg>
-                    <h1 class="text-2xl font-black tracking-wider text-white">STEVEN</h1>
-                </div>
-                <nav class="hidden md:flex space-x-2" id="main-nav">
-                    <a href="#" data-tab="resumen" class="nav-link active px-3 py-2 rounded-md text-sm font-medium">Resumen</a>
-                    <a href="#" data-tab="fit-ai" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Fit-AI</a>
-                    <a href="#" data-tab="nutricion" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Nutrición</a>
-                    <a href="#" data-tab="entrenamiento" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Entrenamiento</a>
-                    <a href="#" data-tab="progreso" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Progreso</a>
-                    <a href="#" data-tab="recursos" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Recursos</a>
-                </nav>
-                <div class="flex items-center gap-3">
-                    <div id="user-info" class="hidden items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
-                            U
-                        </div>
-                        <span id="username" class="text-white text-sm"></span>
-                        <div id="premium-indicator" class="premium-badge hidden">
-                            <i class="fas fa-crown"></i>
-                            <span>PREMIUM</span>
-                        </div>
-                    </div>
-                    <button id="login-btn" class="btn-secondary">Iniciar Sesión</button>
-                    <button id="premium-btn" class="btn-premium hidden">Premium</button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div class="px-4 py-6 sm:px-0">
-            <section id="resumen" class="content-section active">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-white via-red-400 to-orange-400">Tu Panel de Control</h2>
-                    <p class="mt-4 text-lg text-gray-400">Resumen de tus objetivos y estado actual.</p>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                    <div class="card lg:col-span-1 flex flex-col items-center text-center h-full">
-                        <!-- LOGO SVG FISICOCULTURISTA -->
-                        <svg class="h-24 w-24 text-white mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M6.75 6.75C8.16421 6.75 9.33333 7.91921 9.33333 9.33333C9.33333 10.7475 8.16421 11.9167 6.75 11.9167C5.33579 11.9167 4.16667 10.7475 4.16667 9.33333C4.16667 7.91921 5.33579 6.75 6.75 6.75ZM6.75 8.25C6.19772 8.25 5.75 8.70181 5.75 9.24542C5.75 9.32458 5.75 9.49167 5.75 9.49167C5.83579 10.0279 6.24188 10.4167 6.75 10.4167C7.25812 10.4167 7.66421 10.0279 7.75 9.49167C7.75 9.49167 7.75 9.32458 7.75 9.24542C7.75 8.70181 7.30228 8.25 6.75 8.25ZM20.75 11.5833C20.75 12.3923 20.0923 13.0833 19.25 13.0833C18.4077 13.0833 17.75 12.3923 17.75 11.5833C17.75 10.7744 18.4077 10.0833 19.25 10.0833C20.0923 10.0833 20.75 10.7744 20.75 11.5833ZM15.4167 4.66667C15.4167 3.85771 14.759 3.16667 13.9167 3.16667C13.0744 3.16667 12.4167 3.85771 12.4167 4.66667C12.4167 5.47562 13.0744 6.16667 13.9167 6.16667C14.759 6.16667 15.4167 5.47562 15.4167 4.66667ZM18.5 7.66667C16.9739 7.66667 15.6946 8.74608 15.4674 10.2083H15.25C14.2835 10.2083 13.4167 9.34151 13.4167 8.375V8C13.4167 7.15771 12.759 6.5 11.9167 6.5C11.0744 6.5 10.4167 7.15771 10.4167 8V12.75C10.4167 14.8211 12.0956 16.5 14.1667 16.5H14.5C14.7761 16.5 15 16.2761 15 16V13.25C15 12.6977 15.4477 12.25 16 12.25H16.25C16.8023 12.25 17.25 12.6977 17.25 13.25V16C17.25 16.2761 17.4739 16.5 17.75 16.5H18.0833C19.9603 16.5 21.5 14.9943 21.5 13.125V11.5833C21.5 9.41223 19.9943 7.66667 18.5 7.66667ZM11.1667 20.8333L10 17.25H8.25L7.08333 20.8333H11.1667Z"/>
-                        </svg>
-                        <h3 class="text-3xl font-black tracking-wider text-white">STEVEN</h3>
-                        <p class="text-md font-semibold text-gray-400 mt-1 uppercase tracking-widest">NO PAIN NO GAIN</p>
-                        <div class="w-full border-t border-gray-700 my-6"></div>
-                        <div class="w-full text-left space-y-3">
-                            <h4 class="text-lg font-bold text-center text-red-400">Objetivo Actual</h4>
-                            <p class="text-center text-gray-300">Máxima definición muscular.</p>
-                        </div>
-                        <div class="mt-6 w-full">
-                            <button id="activate-premium-card" class="btn-premium w-full">
-                                <i class="fas fa-crown mr-2"></i>
-                                Activar Premium
-                            </button>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                        <div class="flex flex-col items-center">
-                            <div class="chart-container">
-                                <canvas id="macroChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="space-y-6">
-                            <div class="card text-center">
-                                <h3 class="text-lg font-semibold text-gray-500">Calorías Totales</h3>
-                                <p id="total-calorias" class="text-5xl font-bold text-white">2270</p>
-                                <p class="text-sm text-gray-400">kcal/día</p>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="card text-center">
-                                    <h4 class="text-md font-semibold text-red-500">Proteínas</h4>
-                                    <p id="gramos-proteina" class="text-3xl font-bold">225g</p>
-                                </div>
-                                <div class="card text-center">
-                                    <h4 class="text-md font-semibold text-gray-300">Carbs</h4>
-                                    <p id="gramos-carbs" class="text-3xl font-bold">200g</p>
-                                </div>
-                                <div class="card text-center">
-                                    <h4 class="text-md font-semibold text-gray-500">Grasas</h4>
-                                    <p id="gramos-grasas" class="text-3xl font-bold">63g</p>
-                                </div>
-                            </div>
-                            <div class="card text-center">
-                                <button id="change-goal-ai-btn" class="btn-primary w-full">✨ Ajustar Objetivo con IA</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Otras secciones... -->
-        </div>
-    </main>
     
-    <!-- Footer -->
-    <footer class="py-8 bg-black/30 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <svg class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M6.75 6.75C8.16421 6.75 9.33333 7.91921 9.33333 9.33333C9.33333 10.7475 8.16421 11.9167 6.75 11.9167C5.33579 11.9167 4.16667 10.7475 4.16667 9.33333C4.16667 7.91921 5.33579 6.75 6.75 6.75ZM6.75 8.25C6.19772 8.25 5.75 8.70181 5.75 9.24542C5.75 9.32458 5.75 9.49167 5.75 9.49167C5.83579 10.0279 6.24188 10.4167 6.75 10.4167C7.25812 10.4167 7.66421 10.0279 7.75 9.49167C7.75 9.49167 7.75 9.32458 7.75 9.24542C7.75 8.70181 7.30228 8.25 6.75 8.25ZM20.75 11.5833C20.75 12.3923 20.0923 13.0833 19.25 13.0833C18.4077 13.0833 17.75 12.3923 17.75 11.5833C17.75 10.7744 18.4077 10.0833 19.25 10.0833C20.0923 10.0833 20.75 10.7744 20.75 11.5833ZM15.4167 4.66667C15.4167 3.85771 14.759 3.16667 13.9167 3.16667C13.0744 3.16667 12.4167 3.85771 12.4167 4.66667C12.4167 5.47562 13.0744 6.16667 13.9167 6.16667C14.759 6.16667 15.4167 5.47562 15.4167 4.66667ZM18.5 7.66667C16.9739 7.66667 15.6946 8.74608 15.4674 10.2083H15.25C14.2835 10.2083 13.4167 9.34151 13.4167 8.375V8C13.4167 7.15771 12.759 6.5 11.9167 6.5C11.0744 6.5 10.4167 7.15771 10.4167 8V12.75C10.4167 14.8211 12.0956 16.5 14.1667 16.5H14.5C14.7761 16.5 15 16.2761 15 16V13.25C15 12.6977 15.4477 12.25 16 12.25H16.25C16.8023 12.25 17.25 12.6977 17.25 13.25V16C17.25 16.2761 17.4739 16.5 17.75 16.5H18.0833C19.9603 16.5 21.5 14.9943 21.5 13.125V11.5833C21.5 9.41223 19.9943 7.66667 18.5 7.66667ZM11.1667 20.8333L10 17.25H8.25L7.08333 20.8333H11.1667Z"/>
-                    </svg>
-                    <h1 class="text-xl font-black tracking-wider text-white">STEVEN FITNESS</h1>
+    <!-- MODAL DE AUTENTICACIÓN -->
+    <div id="auth-container" class="hidden min-h-screen w-full items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="card text-center">
+                <div class="flex items-center justify-center gap-3 mb-6">
+                    <svg class="h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.75 6.75C8.16421 6.75 9.33333 7.91921 9.33333 9.33333C9.33333 10.7475 8.16421 11.9167 6.75 11.9167C5.33579 11.9167 4.16667 10.7475 4.16667 9.33333C4.16667 7.91921 5.33579 6.75 6.75 6.75ZM6.75 8.25C6.19772 8.25 5.75 8.70181 5.75 9.24542C5.75 9.32458 5.75 9.49167 5.75 9.49167C5.83579 10.0279 6.24188 10.4167 6.75 10.4167C7.25812 10.4167 7.66421 10.0279 7.75 9.49167C7.75 9.49167 7.75 9.32458 7.75 9.24542C7.75 8.70181 7.30228 8.25 6.75 8.25ZM20.75 11.5833C20.75 12.3923 20.0923 13.0833 19.25 13.0833C18.4077 13.0833 17.75 12.3923 17.75 11.5833C17.75 10.7744 18.4077 10.0833 19.25 10.0833C20.0923 10.0833 20.75 10.7744 20.75 11.5833ZM15.4167 4.66667C15.4167 3.85771 14.759 3.16667 13.9167 3.16667C13.0744 3.16667 12.4167 3.85771 12.4167 4.66667C12.4167 5.47562 13.0744 6.16667 13.9167 6.16667C14.759 6.16667 15.4167 5.47562 15.4167 4.66667ZM18.5 7.66667C16.9739 7.66667 15.6946 8.74608 15.4674 10.2083H15.25C14.2835 10.2083 13.4167 9.34151 13.4167 8.375V8C13.4167 7.15771 12.759 6.5 11.9167 6.5C11.0744 6.5 10.4167 7.15771 10.4167 8V12.75C10.4167 14.8211 12.0956 16.5 14.1667 16.5H14.5C14.7761 16.5 15 16.2761 15 16V13.25C15 12.6977 15.4477 12.25 16 12.25H16.25C16.8023 12.25 17.25 12.6977 17.25 13.25V16C17.25 16.2761 17.4739 16.5 17.75 16.5H18.0833C19.9603 16.5 21.5 14.9943 21.5 13.125V11.5833C21.5 9.41223 19.9943 7.66667 18.5 7.66667ZM11.1667 20.8333L10 17.25H8.25L7.08333 20.8333H11.1667Z"/></svg>
+                    <h1 class="text-3xl font-black tracking-wider text-white">STEVEN PRO</h1>
                 </div>
-                <div class="mt-4 md:mt-0 flex gap-4">
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-white transition">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="mt-8 text-center text-gray-500 text-sm">
-                <p>&copy; 2023 STEVEN FITNESS. Todos los derechos reservados.</p>
-                <p class="mt-2">Desarrollado con pasión por el fitness</p>
+                <!-- Formulario de Login -->
+                <form id="login-form" class="space-y-4">
+                    <h2 class="text-xl font-bold text-white">Iniciar Sesión</h2>
+                    <input type="email" id="login-email" class="form-input" placeholder="Correo electrónico" required>
+                    <input type="password" id="login-password" class="form-input" placeholder="Contraseña" required>
+                    <button type="submit" class="btn-primary w-full">Entrar</button>
+                    <p class="text-sm text-gray-400">¿No tienes cuenta? <a href="#" id="show-register" class="font-bold text-electric-cyan hover:underline">Regístrate</a></p>
+                </form>
+                <!-- Formulario de Registro -->
+                <form id="register-form" class="hidden space-y-4">
+                    <h2 class="text-xl font-bold text-white">Crear Cuenta</h2>
+                    <input type="email" id="register-email" class="form-input" placeholder="Correo electrónico" required>
+                    <input type="password" id="register-password" class="form-input" placeholder="Contraseña (mín. 6 caracteres)" required>
+                    <button type="submit" class="btn-primary w-full">Registrarse</button>
+                    <p class="text-sm text-gray-400">¿Ya tienes cuenta? <a href="#" id="show-login" class="font-bold text-electric-cyan hover:underline">Inicia Sesión</a></p>
+                </form>
+                <p id="auth-error" class="text-red-400 mt-4 h-4"></p>
             </div>
         </div>
-    </footer>
+    </div>
 
-    <script>
-        // Simulación de usuarios registrados
-        const users = [
-            { id: 1, name: "Juan Pérez", email: "juan@example.com", password: "password123", premium: false },
-            { id: 2, name: "María Gómez", email: "maria@example.com", password: "password123", premium: true }
-        ];
+    <!-- ===== APLICACIÓN PRINCIPAL (OCULTA INICIALMENTE) ===== -->
+    <div id="main-app" class="hidden min-h-screen pb-16 md:pb-0">
+        <!-- HEADER -->
+        <header class="bg-black/50 backdrop-blur-md shadow-lg sticky top-0 z-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center gap-3">
+                        <svg class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.75 6.75C8.16421 6.75 9.33333 7.91921 9.33333 9.33333C9.33333 10.7475 8.16421 11.9167 6.75 11.9167C5.33579 11.9167 4.16667 10.7475 4.16667 9.33333C4.16667 7.91921 5.33579 6.75 6.75 6.75ZM6.75 8.25C6.19772 8.25 5.75 8.70181 5.75 9.24542C5.75 9.32458 5.75 9.49167 5.75 9.49167C5.83579 10.0279 6.24188 10.4167 6.75 10.4167C7.25812 10.4167 7.66421 10.0279 7.75 9.49167C7.75 9.49167 7.75 9.32458 7.75 9.24542C7.75 8.70181 7.30228 8.25 6.75 8.25ZM20.75 11.5833C20.75 12.3923 20.0923 13.0833 19.25 13.0833C18.4077 13.0833 17.75 12.3923 17.75 11.5833C17.75 10.7744 18.4077 10.0833 19.25 10.0833C20.0923 10.0833 20.75 10.7744 20.75 11.5833ZM15.4167 4.66667C15.4167 3.85771 14.759 3.16667 13.9167 3.16667C13.0744 3.16667 12.4167 3.85771 12.4167 4.66667C12.4167 5.47562 13.0744 6.16667 13.9167 6.16667C14.759 6.16667 15.4167 5.47562 15.4167 4.66667ZM18.5 7.66667C16.9739 7.66667 15.6946 8.74608 15.4674 10.2083H15.25C14.2835 10.2083 13.4167 9.34151 13.4167 8.375V8C13.4167 7.15771 12.759 6.5 11.9167 6.5C11.0744 6.5 10.4167 7.15771 10.4167 8V12.75C10.4167 14.8211 12.0956 16.5 14.1667 16.5H14.5C14.7761 16.5 15 16.2761 15 16V13.25C15 12.6977 15.4477 12.25 16 12.25H16.25C16.8023 12.25 17.25 12.6977 17.25 13.25V16C17.25 16.2761 17.4739 16.5 17.75 16.5H18.0833C19.9603 16.5 21.5 14.9943 21.5 13.125V11.5833C21.5 9.41223 19.9943 7.66667 18.5 7.66667ZM11.1667 20.8333L10 17.25H8.25L7.08333 20.8333H11.1667Z"/></svg>
+                        <h1 class="text-2xl font-black tracking-wider text-white">STEVEN</h1>
+                    </div>
+                    <nav class="hidden md:flex space-x-2" id="main-nav">
+                         <a href="#" data-tab="resumen" class="nav-link active px-3 py-2 rounded-md text-sm font-medium">Resumen</a>
+                         <a href="#" data-tab="fit-ai" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Fit-AI</a>
+                         <a href="#" data-tab="nutricion" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Nutrición</a>
+                         <a href="#" data-tab="entrenamiento" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Entrenamiento</a>
+                         <a href="#" data-tab="progreso" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Progreso</a>
+                         <a href="#" data-tab="premium" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-premium-gold">⭐ Premium</a>
+                    </nav>
+                    <div id="user-info" class="flex items-center gap-4">
+                        <span id="user-email" class="text-sm text-gray-300 hidden md:block"></span>
+                        <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm">Salir</button>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-        // Datos de macro iniciales
-        let macroData = { calorias: 2270, proteina: 225, carbs: 200, grasas: 63 };
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <!-- SECCIONES DE CONTENIDO (Resumen, Fit-AI, etc.) -->
+                <section id="resumen" class="content-section active">
+                    <!-- Contenido de Resumen se cargará aquí -->
+                </section>
+                <section id="fit-ai" class="content-section">
+                    <!-- Contenido de Fit-AI se cargará aquí -->
+                </section>
+                <section id="nutricion" class="content-section">
+                    <!-- Contenido de Nutrición se cargará aquí -->
+                </section>
+                <section id="entrenamiento" class="content-section">
+                    <!-- Contenido de Entrenamiento se cargará aquí -->
+                </section>
+                <section id="progreso" class="content-section">
+                    <!-- Contenido de Progreso se cargará aquí -->
+                </section>
+                
+                <!-- ===== NUEVA SECCIÓN PREMIUM ===== -->
+                <section id="premium" class="content-section">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-premium-gold">Desbloquea tu Máximo Potencial</h2>
+                        <p class="mt-4 text-lg text-gray-400">Accede a herramientas exclusivas con el Plan Premium.</p>
+                    </div>
 
-        // Estado de la aplicación
-        let currentUser = null;
-        let premiumActive = false;
-        let visitors = [];
+                    <div id="premium-content" class="hidden">
+                        <div class="card text-center max-w-2xl mx-auto">
+                            <h3 class="text-2xl font-bold text-premium-gold">¡Ya eres Premium!</h3>
+                            <p class="text-gray-300 mt-2">Gracias por ser parte del club. Tu suscripción está activa.</p>
+                            <p id="premium-expiry" class="mt-2 text-sm text-gray-500"></p>
+                            <hr class="my-6 border-gray-700">
+                            <h4 class="text-xl font-bold text-white">Administración</h4>
+                            <div class="mt-4 flex flex-col sm:flex-row gap-4 justify-center">
+                                <button id="show-online-users-btn" class="btn-primary flex-1">Ver Usuarios Conectados</button>
+                                <button id="show-owner-code-btn" class="btn-primary flex-1 bg-gradient-to-r from-green-400 to-blue-500">Activar Código Dueño</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="non-premium-content">
+                        <div class="card max-w-2xl mx-auto text-center">
+                            <h3 class="text-2xl font-bold text-white">Obtén el Plan Pro Steven</h3>
+                            <p class="text-premium-gold text-4xl font-black my-4">$50.000 COP</p>
+                            <p class="text-gray-400 mb-6">por 2 meses de acceso total.</p>
+                            <ul class="text-left space-y-3 mb-8">
+                                <li class="flex items-center gap-3"><span class="text-green-400">✔️</span><span>Análisis de progreso con IA Avanzado.</span></li>
+                                <li class="flex items-center gap-3"><span class="text-green-400">✔️</span><span>Generador de rutinas y dietas ilimitado.</span></li>
+                                <li class="flex items-center gap-3"><span class="text-green-400">✔️</span><span>Soporte prioritario.</span></li>
+                            </ul>
+                            <button id="pay-premium-btn" class="btn-primary w-full text-lg">¡Obtener Premium Ahora!</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- NAVEGACIÓN MÓVIL -->
+        <div class="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md shadow-[0_-2px_10px_rgba(0,0,0,0.5)] md:hidden h-16">
+            <nav class="flex justify-around items-center h-full" id="mobile-nav">
+                 <a href="#" data-tab="resumen" class="nav-link-mobile active flex flex-col items-center text-xs p-1 text-gray-400">📊<span class="mt-1">Resumen</span></a>
+                 <a href="#" data-tab="fit-ai" class="nav-link-mobile flex flex-col items-center text-xs p-1 text-gray-400">🤖<span class="mt-1">Fit-AI</span></a>
+                 <a href="#" data-tab="nutricion" class="nav-link-mobile flex flex-col items-center text-xs p-1 text-gray-400">🍎<span class="mt-1">Nutrición</span></a>
+                 <a href="#" data-tab="entrenamiento" class="nav-link-mobile flex flex-col items-center text-xs p-1 text-gray-400">🏋️<span class="mt-1">Entreno</span></a>
+                 <a href="#" data-tab="progreso" class="nav-link-mobile flex flex-col items-center text-xs p-1 text-gray-400">📈<span class="mt-1">Progreso</span></a>
+                 <a href="#" data-tab="premium" class="nav-link-mobile flex flex-col items-center text-xs p-1 text-premium-gold">⭐<span class="mt-1">Premium</span></a>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- MODALES DE LA APLICACIÓN -->
+    <div id="alert-modal" class="modal-overlay"><div class="card max-w-sm w-full text-center"><p id="alert-modal-message" class="text-white mb-6"></p><div id="alert-modal-buttons" class="flex justify-center gap-4"></div></div></div>
+    <div id="ai-modal" class="modal-overlay"><div class="card max-w-2xl w-full"><div class="flex justify-between items-center pb-3 border-b border-gray-700"><h3 id="ai-modal-title" class="text-xl font-bold text-white text-left"></h3><button id="ai-modal-close" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button></div><div class="p-4 overflow-y-auto max-h-[70vh] text-left"><div id="ai-modal-loader" class="hidden justify-center items-center p-12"><div class="loader"></div></div><div id="ai-modal-content"></div></div></div></div>
+    <div id="owner-code-modal" class="modal-overlay"><div class="card max-w-sm w-full text-center"><h3 class="text-xl font-bold text-white mb-4">Código de Dueño</h3><p class="text-gray-400 mb-4">Introduce tu código secreto para activar el plan premium.</p><form id="owner-code-form"><input type="password" id="owner-code-input" class="form-input text-center" placeholder="Código Secreto"><button type="submit" class="btn-primary w-full mt-4">Activar</button></form><button id="close-owner-modal-btn" class="mt-2 text-gray-400 hover:text-white">Cerrar</button></div></div>
+    <div id="online-users-modal" class="modal-overlay"><div class="card max-w-md w-full"><h3 class="text-xl font-bold text-white mb-4 text-center">Usuarios en Tiempo Real</h3><div id="online-users-list" class="space-y-3 max-h-60 overflow-y-auto"></div><button id="close-online-users-btn" class="btn-primary w-full mt-4">Cerrar</button></div></div>
+    
+    <!-- Scripts de Firebase -->
+    <script type="module">
+        // Importar funciones de Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuración de Firebase (se completa automáticamente en el entorno)
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
         
-        // DOM Elements
-        const loginBtn = document.getElementById('login-btn');
-        const premiumBtn = document.getElementById('premium-btn');
-        const activatePremiumCard = document.getElementById('activate-premium-card');
-        const userInfo = document.getElementById('user-info');
-        const usernameEl = document.getElementById('username');
-        const premiumIndicator = document.getElementById('premium-indicator');
-        const loginModal = document.getElementById('login-modal');
-        const registerModal = document.getElementById('register-modal');
-        const premiumModal = document.getElementById('premium-modal');
-        const visitorsModal = document.getElementById('visitors-modal');
-        const visitorsBtn = document.getElementById('visitors-btn');
-        const visitorsList = document.getElementById('visitors-list');
+        // Variables globales de la app
+        let currentUser = null;
+        let userData = null;
+        let unsubscribePresence; // Para detener el listener de presencia
 
-        // Mostrar modales
-        loginBtn.addEventListener('click', () => loginModal.style.display = 'block');
-        premiumBtn.addEventListener('click', () => premiumModal.style.display = 'block');
-        activatePremiumCard.addEventListener('click', () => premiumModal.style.display = 'block');
-        visitorsBtn.addEventListener('click', () => visitorsModal.style.display = 'block');
+        // --- LÓGICA DE AUTENTICACIÓN Y SESIÓN ---
+        const appLoader = document.getElementById('app-loader');
+        const authContainer = document.getElementById('auth-container');
+        const mainAppContainer = document.getElementById('main-app');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const authError = document.getElementById('auth-error');
 
-        // Cerrar modales
-        document.getElementById('close-login-modal').addEventListener('click', () => loginModal.style.display = 'none');
-        document.getElementById('close-register-modal').addEventListener('click', () => registerModal.style.display = 'none');
-        document.getElementById('close-premium-modal').addEventListener('click', () => premiumModal.style.display = 'none');
-        document.getElementById('close-visitors-modal').addEventListener('click', () => visitorsModal.style.display = 'none');
+        // Cambiar entre formularios de login y registro
+        document.getElementById('show-register').addEventListener('click', (e) => { e.preventDefault(); loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); authError.textContent = ''; });
+        document.getElementById('show-login').addEventListener('click', (e) => { e.preventDefault(); registerForm.classList.add('hidden'); loginForm.classList.remove('hidden'); authError.textContent = ''; });
 
-        // Alternar entre login y registro
-        document.getElementById('show-register').addEventListener('click', (e) => {
+        // **CORREGIDO** Manejar registro
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            loginModal.style.display = 'none';
-            registerModal.style.display = 'block';
+            const email = registerForm['register-email'].value;
+            const password = registerForm['register-password'].value;
+            authError.textContent = '';
+            try {
+                // Solo crea el usuario en Auth. onAuthStateChanged se encargará del resto.
+                await createUserWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                authError.textContent = "Error al registrar: " + error.message;
+            }
         });
 
-        document.getElementById('show-login').addEventListener('click', (e) => {
+        // Manejar inicio de sesión
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            registerModal.style.display = 'none';
-            loginModal.style.display = 'block';
+            const email = loginForm['login-email'].value;
+            const password = loginForm['login-password'].value;
+            authError.textContent = '';
+            try {
+                await setPersistence(auth, browserLocalPersistence); // Mantener sesión iniciada
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                authError.textContent = "Error al iniciar sesión: " + error.message;
+            }
         });
 
-        // Formulario de login
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            const user = users.find(u => u.email === email && u.password === password);
-            
+        // Manejar cierre de sesión
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+             if (currentUser) {
+                const presenceRef = doc(db, "presence", currentUser.uid);
+                await deleteDoc(presenceRef); // Eliminar estado de presencia al salir
+            }
+            await signOut(auth);
+        });
+
+        // **CORREGIDO** Listener de estado de autenticación (el corazón de la app)
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
-                premiumActive = user.premium;
-                updateUI();
-                loginModal.style.display = 'none';
-                showAlert(`¡Bienvenido ${user.name}!`);
-            } else {
-                showAlert('Credenciales incorrectas. Inténtalo de nuevo.');
-            }
-        });
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
 
-        // Formulario de registro
-        document.getElementById('register-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirm = document.getElementById('register-confirm').value;
-            
-            if (password !== confirm) {
-                showAlert('Las contraseñas no coinciden.');
-                return;
-            }
-            
-            if (users.some(u => u.email === email)) {
-                showAlert('Este correo ya está registrado.');
-                return;
-            }
-            
-            const newUser = {
-                id: users.length + 1,
-                name,
-                email,
-                password,
-                premium: false
-            };
-            
-            users.push(newUser);
-            currentUser = newUser;
-            premiumActive = false;
-            updateUI();
-            registerModal.style.display = 'none';
-            showAlert(`¡Registro exitoso, ${name}!`);
-        });
-
-        // Activar premium con código
-        document.getElementById('activate-premium-btn').addEventListener('click', () => {
-            const code = document.getElementById('premium-code').value;
-            
-            if (code === "STEVENPREMIUM") {
-                premiumActive = true;
-                if (currentUser) {
-                    currentUser.premium = true;
-                }
-                updateUI();
-                premiumModal.style.display = 'none';
-                showAlert('¡Premium activado con éxito! Disfruta de todas las funciones exclusivas.');
-            } else {
-                showAlert('Código inválido. Inténtalo de nuevo.');
-            }
-        });
-
-        // Comprar premium
-        document.getElementById('buy-premium-btn').addEventListener('click', () => {
-            premiumActive = true;
-            if (currentUser) {
-                currentUser.premium = true;
-            }
-            updateUI();
-            premiumModal.style.display = 'none';
-            showAlert('¡Gracias por comprar Premium! Tu plan está activo por 2 meses.');
-        });
-
-        // Actualizar UI según estado
-        function updateUI() {
-            if (currentUser) {
-                loginBtn.classList.add('hidden');
-                premiumBtn.classList.remove('hidden');
-                userInfo.classList.remove('hidden');
-                usernameEl.textContent = currentUser.name.split(' ')[0];
-                
-                if (premiumActive) {
-                    premiumIndicator.classList.remove('hidden');
-                    premiumBtn.innerHTML = '<i class="fas fa-crown mr-2"></i> Premium';
-                    visitorsBtn.classList.remove('hidden');
+                if (userDocSnap.exists()) {
+                    // Usuario existente que inicia sesión
+                    userData = userDocSnap.data();
                 } else {
-                    premiumIndicator.classList.add('hidden');
-                    premiumBtn.textContent = 'Premium';
-                    visitorsBtn.classList.add('hidden');
+                    // Es un usuario nuevo, acabamos de registrarlo. Creamos su documento.
+                    console.log("Nuevo usuario detectado. Creando documento en Firestore...");
+                    const newUserData = {
+                        email: user.email,
+                        uid: user.uid,
+                        isPremium: false,
+                        premiumExpires: null,
+                        createdAt: serverTimestamp()
+                    };
+                    await setDoc(userDocRef, newUserData);
+                    userData = newUserData; // Usar los datos recién creados
                 }
+                
+                // Una vez que tenemos los datos del usuario (ya sea existente o nuevo), iniciamos la app.
+                initializeAppUI();
+                setupPresenceSystem();
+
             } else {
-                loginBtn.classList.remove('hidden');
-                premiumBtn.classList.add('hidden');
-                userInfo.classList.add('hidden');
-                visitorsBtn.classList.add('hidden');
+                // El usuario ha cerrado sesión
+                currentUser = null;
+                userData = null;
+                if (unsubscribePresence) unsubscribePresence(); // Detener listener de presencia
+                
+                // Mostrar UI de autenticación
+                authContainer.style.display = 'flex';
+                mainAppContainer.classList.add('hidden');
             }
-        }
-
-        // Mostrar alerta
-        function showAlert(message) {
-            alert(message);
-        }
-
-        // Simular visitantes en tiempo real
-        function simulateVisitors() {
-            if (premiumActive) {
-                const names = ['Carlos', 'Ana', 'Luis', 'Sofía', 'Miguel', 'Laura', 'David', 'Elena', 'Jorge', 'Patricia'];
-                const cities = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena'];
-                
-                // Limpiar lista actual
-                visitors = [];
-                
-                // Generar 3-8 visitantes aleatorios
-                const count = Math.floor(Math.random() * 6) + 3;
-                for (let i = 0; i < count; i++) {
-                    const name = names[Math.floor(Math.random() * names.length)];
-                    const city = cities[Math.floor(Math.random() * cities.length)];
-                    const time = Math.floor(Math.random() * 60) + 1;
-                    
-                    visitors.push({
-                        name,
-                        city,
-                        time: `${time} min`
-                    });
-                }
-                
-                // Actualizar lista en el modal
-                updateVisitorsList();
-            }
-        }
-        
-        function updateVisitorsList() {
-            visitorsList.innerHTML = '';
-            
-            visitors.forEach(visitor => {
-                const firstLetter = visitor.name.charAt(0);
-                const card = document.createElement('div');
-                card.className = 'visitor-card fade-in';
-                card.innerHTML = `
-                    <div class="visitor-avatar">${firstLetter}</div>
-                    <div class="flex-1">
-                        <div class="font-semibold">${visitor.name}</div>
-                        <div class="text-xs text-gray-400">${visitor.city} - ${visitor.time}</div>
-                    </div>
-                    <div class="pulse" title="En línea"></div>
-                `;
-                visitorsList.appendChild(card);
-            });
-        }
-        
-        // Actualizar visitantes cada 5 segundos
-        setInterval(simulateVisitors, 5000);
-        
-        // Inicializar gráfico de macros
-        function renderMacroChart() {
-            const ctx = document.getElementById('macroChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Proteína', 'Carbs', 'Grasas'],
-                    datasets: [{
-                        data: [macroData.proteina, macroData.carbs, macroData.grasas],
-                        backgroundColor: [
-                            'rgba(255, 71, 87, 0.8)',
-                            'rgba(45, 135, 217, 0.8)',
-                            'rgba(155, 89, 182, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 71, 87, 1)',
-                            'rgba(45, 135, 217, 1)',
-                            'rgba(155, 89, 182, 1)'
-                        ],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#f8f9fa',
-                                font: {
-                                    size: 12
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = Math.round((value / total) * 100);
-                                    return `${label}: ${value}g (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', function() {
-            renderMacroChart();
-            updateUI();
-            simulateVisitors();
+            appLoader.style.display = 'none';
         });
+        
+        // --- SISTEMA DE PRESENCIA EN TIEMPO REAL ---
+        async function setupPresenceSystem() {
+            if (!currentUser) return;
+            const uid = currentUser.uid;
+            const presenceRef = doc(db, "presence", uid);
+
+            // Actualizar el estado a 'online'
+            await setDoc(presenceRef, {
+                uid: uid,
+                email: currentUser.email,
+                status: 'online',
+                last_seen: serverTimestamp()
+            }, { merge: true });
+            
+            // Detectar cuando la pestaña se cierra o el usuario se va
+            window.addEventListener('beforeunload', (e) => {
+                // Esta es una operación síncrona, no se puede usar await
+                // Firestore manejará la desconexión a través de sus reglas de seguridad si es necesario,
+                // pero eliminar el documento aquí es más proactivo.
+                if (currentUser) {
+                    deleteDoc(doc(db, "presence", currentUser.uid));
+                }
+            });
+        }
+
+        // --- LÓGICA DE LA INTERFAZ DE USUARIO PRINCIPAL ---
+        function initializeAppUI() {
+            authContainer.style.display = 'none';
+            mainAppContainer.classList.remove('hidden');
+            document.getElementById('user-email').textContent = currentUser.email;
+            
+            loadSectionsContent();
+            updatePremiumUI();
+            
+            // Aquí se inicializarían los componentes de la app como los gráficos, etc.
+            // Por ejemplo: initializeChartsAndData();
+        }
+
+        function loadSectionsContent() {
+            // Esta función cargaría el HTML de cada sección para mantener el código limpio.
+            // Por ahora, solo un marcador de posición.
+            document.getElementById('resumen').innerHTML = `
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-white to-electric-cyan">Tu Panel de Control</h2>
+                    <p class="mt-4 text-lg text-gray-400">Aquí verás el resumen de tus objetivos y estado actual.</p>
+                </div>
+                <div class="card"><p>El contenido del panel de control irá aquí.</p></div>
+            `;
+            // Repetir para las otras secciones...
+        }
+
+        // --- LÓGICA PREMIUM ---
+        const premiumContent = document.getElementById('premium-content');
+        const nonPremiumContent = document.getElementById('non-premium-content');
+        const premiumExpiryEl = document.getElementById('premium-expiry');
+
+        function updatePremiumUI() {
+            // Comprobar si la suscripción ha expirado
+            if (userData.isPremium && userData.premiumExpires && userData.premiumExpires.toDate() < new Date()) {
+                userData.isPremium = false;
+                updateDoc(doc(db, "users", currentUser.uid), { isPremium: false });
+            }
+
+            if (userData.isPremium) {
+                premiumContent.classList.remove('hidden');
+                nonPremiumContent.classList.add('hidden');
+                const expiryDate = userData.premiumExpires.toDate().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+                premiumExpiryEl.textContent = `Tu acceso expira el: ${expiryDate}`;
+            } else {
+                premiumContent.classList.add('hidden');
+                nonPremiumContent.classList.remove('hidden');
+            }
+        }
+        
+        // Simulación de pago
+        document.getElementById('pay-premium-btn').addEventListener('click', () => {
+            showAlert('Redirigiendo a la pasarela de pago... (Simulación)', 'info');
+            setTimeout(() => {
+                upgradeToPremium();
+            }, 2000);
+        });
+
+        async function upgradeToPremium() {
+            const expiryDate = new Date();
+            expiryDate.setMonth(expiryDate.getMonth() + 2); // Añadir 2 meses
+            
+            const userDocRef = doc(db, "users", currentUser.uid);
+            await updateDoc(userDocRef, {
+                isPremium: true,
+                premiumExpires: expiryDate
+            });
+            
+            // Actualizar datos locales y UI
+            const updatedDoc = await getDoc(userDocRef);
+            userData = updatedDoc.data();
+            updatePremiumUI();
+            showAlert('¡Felicidades! Tu plan Premium ha sido activado.', 'success');
+        }
+        
+        // Modal de código de dueño
+        const ownerCodeModal = document.getElementById('owner-code-modal');
+        document.getElementById('show-owner-code-btn').addEventListener('click', () => ownerCodeModal.style.display = 'flex');
+        document.getElementById('close-owner-modal-btn').addEventListener('click', () => ownerCodeModal.style.display = 'none');
+        document.getElementById('owner-code-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const code = document.getElementById('owner-code-input').value;
+            if (code === 'STEVENPRO') {
+                upgradeToPremium();
+                ownerCodeModal.style.display = 'none';
+                document.getElementById('owner-code-input').value = '';
+            } else {
+                showAlert('Código incorrecto.', 'error');
+            }
+        });
+
+        // Modal de usuarios en línea
+        const onlineUsersModal = document.getElementById('online-users-modal');
+        const onlineUsersList = document.getElementById('online-users-list');
+        document.getElementById('show-online-users-btn').addEventListener('click', () => {
+            onlineUsersModal.style.display = 'flex';
+            const presenceCollection = collection(db, "presence");
+            unsubscribePresence = onSnapshot(presenceCollection, (snapshot) => {
+                let usersHTML = '';
+                snapshot.docs.forEach(doc => {
+                    const user = doc.data();
+                    const lastSeen = user.last_seen?.toDate();
+                    // Considerar online si la última vez visto fue hace menos de 2 minutos
+                    if (lastSeen && (new Date() - lastSeen) < 120000) {
+                        usersHTML += `
+                            <div class="flex items-center justify-between bg-gray-800 p-2 rounded-lg">
+                                <span class="text-gray-300">${user.email}</span>
+                                <span class="flex items-center gap-2 text-green-400 text-sm">
+                                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    En línea
+                                </span>
+                            </div>
+                        `;
+                    }
+                });
+                onlineUsersList.innerHTML = usersHTML || '<p class="text-center text-gray-500">Nadie más está conectado.</p>';
+            });
+        });
+        document.getElementById('close-online-users-btn').addEventListener('click', () => {
+            onlineUsersModal.style.display = 'none';
+            if (unsubscribePresence) {
+                unsubscribePresence();
+            }
+        });
+
+        // --- FUNCIONES DE UTILIDAD (MODALES, ETC.) ---
+        const alertModal = document.getElementById('alert-modal');
+        const alertModalMessage = document.getElementById('alert-modal-message');
+        const alertModalButtons = document.getElementById('alert-modal-buttons');
+
+        function showAlert(message, type = 'default') {
+            let colorClass = 'btn-primary';
+            if (type === 'error') colorClass = 'bg-red-600 hover:bg-red-700';
+            if (type === 'success') colorClass = 'bg-green-600 hover:bg-green-700';
+
+            alertModalMessage.textContent = message;
+            alertModalButtons.innerHTML = `<button id="alert-ok-btn" class="${colorClass} text-white font-bold py-2 px-6 rounded-lg">OK</button>`;
+            alertModal.style.display = 'flex';
+            document.getElementById('alert-ok-btn').onclick = () => alertModal.style.display = 'none';
+        }
+
+        // --- LÓGICA DE NAVEGACIÓN ---
+        const navLinks = document.querySelectorAll('#main-nav a, #mobile-nav a');
+        const contentSections = document.querySelectorAll('.content-section');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const tabId = e.currentTarget.dataset.tab;
+                contentSections.forEach(s => s.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                navLinks.forEach(l => l.classList.remove('active'));
+                document.querySelectorAll(`.nav-link[data-tab="${tabId}"], .nav-link-mobile[data-tab="${tabId}"]`).forEach(activeLink => activeLink.classList.add('active'));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+        
+        document.getElementById('ai-modal-close').addEventListener('click', () => {
+            document.getElementById('ai-modal').style.display = 'none';
+        });
+
     </script>
 </body>
 </html>
