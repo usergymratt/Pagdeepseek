@@ -237,19 +237,19 @@
             <div class="px-4 py-6 sm:px-0">
                 <!-- SECCIONES DE CONTENIDO (Resumen, Fit-AI, etc.) -->
                 <section id="resumen" class="content-section active">
-                    <!-- Contenido de Resumen se cargará aquí -->
+                    <!-- Contenido de Resumen -->
                 </section>
                 <section id="fit-ai" class="content-section">
-                    <!-- Contenido de Fit-AI se cargará aquí -->
+                    <!-- Contenido de Fit-AI -->
                 </section>
                 <section id="nutricion" class="content-section">
-                    <!-- Contenido de Nutrición se cargará aquí -->
+                    <!-- Contenido de Nutrición -->
                 </section>
                 <section id="entrenamiento" class="content-section">
-                    <!-- Contenido de Entrenamiento se cargará aquí -->
+                    <!-- Contenido de Entrenamiento -->
                 </section>
                 <section id="progreso" class="content-section">
-                    <!-- Contenido de Progreso se cargará aquí -->
+                    <!-- Contenido de Progreso -->
                 </section>
                 
                 <!-- ===== NUEVA SECCIÓN PREMIUM ===== -->
@@ -339,18 +339,25 @@
         const authError = document.getElementById('auth-error');
 
         // Cambiar entre formularios de login y registro
-        document.getElementById('show-register').addEventListener('click', (e) => { e.preventDefault(); loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); authError.textContent = ''; });
-        document.getElementById('show-login').addEventListener('click', (e) => { e.preventDefault(); registerForm.classList.add('hidden'); loginForm.classList.remove('hidden'); authError.textContent = ''; });
+        document.getElementById('show-register').addEventListener('click', (e) => { e.preventDefault(); loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); });
+        document.getElementById('show-login').addEventListener('click', (e) => { e.preventDefault(); registerForm.classList.add('hidden'); loginForm.classList.remove('hidden'); });
 
-        // **CORREGIDO** Manejar registro
+        // Manejar registro
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = registerForm['register-email'].value;
             const password = registerForm['register-password'].value;
-            authError.textContent = '';
             try {
-                // Solo crea el usuario en Auth. onAuthStateChanged se encargará del resto.
-                await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                // Crear documento de usuario en Firestore
+                const userDocRef = doc(db, "users", userCredential.user.uid);
+                await setDoc(userDocRef, {
+                    email: userCredential.user.email,
+                    uid: userCredential.user.uid,
+                    isPremium: false,
+                    premiumExpires: null,
+                    createdAt: serverTimestamp()
+                });
             } catch (error) {
                 authError.textContent = "Error al registrar: " + error.message;
             }
@@ -361,7 +368,6 @@
             e.preventDefault();
             const email = loginForm['login-email'].value;
             const password = loginForm['login-password'].value;
-            authError.textContent = '';
             try {
                 await setPersistence(auth, browserLocalPersistence); // Mantener sesión iniciada
                 await signInWithEmailAndPassword(auth, email, password);
@@ -371,48 +377,37 @@
         });
 
         // Manejar cierre de sesión
-        document.getElementById('logout-btn').addEventListener('click', async () => {
+        document.getElementById('logout-btn').addEventListener('click', () => {
              if (currentUser) {
                 const presenceRef = doc(db, "presence", currentUser.uid);
-                await deleteDoc(presenceRef); // Eliminar estado de presencia al salir
+                deleteDoc(presenceRef); // Eliminar estado de presencia al salir
             }
-            await signOut(auth);
+            signOut(auth);
         });
 
-        // **CORREGIDO** Listener de estado de autenticación (el corazón de la app)
+        // Listener de estado de autenticación (el corazón de la app)
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
+                // Obtener datos del usuario de Firestore
                 const userDocRef = doc(db, "users", user.uid);
                 const userDocSnap = await getDoc(userDocRef);
-
                 if (userDocSnap.exists()) {
-                    // Usuario existente que inicia sesión
                     userData = userDocSnap.data();
+                    // Iniciar la aplicación principal
+                    initializeAppUI();
+                    // Configurar sistema de presencia
+                    setupPresenceSystem();
                 } else {
-                    // Es un usuario nuevo, acabamos de registrarlo. Creamos su documento.
-                    console.log("Nuevo usuario detectado. Creando documento en Firestore...");
-                    const newUserData = {
-                        email: user.email,
-                        uid: user.uid,
-                        isPremium: false,
-                        premiumExpires: null,
-                        createdAt: serverTimestamp()
-                    };
-                    await setDoc(userDocRef, newUserData);
-                    userData = newUserData; // Usar los datos recién creados
+                    // Caso raro: usuario autenticado pero sin documento
+                    console.error("No se encontró el documento del usuario.");
+                    signOut(auth);
                 }
-                
-                // Una vez que tenemos los datos del usuario (ya sea existente o nuevo), iniciamos la app.
-                initializeAppUI();
-                setupPresenceSystem();
-
             } else {
-                // El usuario ha cerrado sesión
                 currentUser = null;
                 userData = null;
-                if (unsubscribePresence) unsubscribePresence(); // Detener listener de presencia
-                
+                // Detener listener de presencia si existe
+                if (unsubscribePresence) unsubscribePresence();
                 // Mostrar UI de autenticación
                 authContainer.style.display = 'flex';
                 mainAppContainer.classList.add('hidden');
@@ -422,9 +417,16 @@
         
         // --- SISTEMA DE PRESENCIA EN TIEMPO REAL ---
         async function setupPresenceSystem() {
-            if (!currentUser) return;
             const uid = currentUser.uid;
             const presenceRef = doc(db, "presence", uid);
+
+            // Firestore conoce cuando un cliente se desconecta y puede ejecutar acciones
+            // Usamos onSnapshot para actualizar en tiempo real
+             onSnapshot(doc(db, ".info/connected"), (snap) => {
+                 if (snap.val() === true) {
+                    // Estamos conectados
+                 }
+             });
 
             // Actualizar el estado a 'online'
             await setDoc(presenceRef, {
@@ -432,16 +434,18 @@
                 email: currentUser.email,
                 status: 'online',
                 last_seen: serverTimestamp()
-            }, { merge: true });
+            });
             
-            // Detectar cuando la pestaña se cierra o el usuario se va
-            window.addEventListener('beforeunload', (e) => {
-                // Esta es una operación síncrona, no se puede usar await
-                // Firestore manejará la desconexión a través de sus reglas de seguridad si es necesario,
-                // pero eliminar el documento aquí es más proactivo.
+            // Actualizar 'last_seen' periódicamente
+            setInterval(() => {
                 if (currentUser) {
-                    deleteDoc(doc(db, "presence", currentUser.uid));
+                    updateDoc(presenceRef, { last_seen: serverTimestamp() });
                 }
+            }, 60000); // Cada minuto
+
+            // Detectar cuando la pestaña se cierra
+            window.addEventListener('beforeunload', () => {
+                deleteDoc(presenceRef);
             });
         }
 
@@ -451,22 +455,26 @@
             mainAppContainer.classList.remove('hidden');
             document.getElementById('user-email').textContent = currentUser.email;
             
+            // Cargar el contenido de las secciones desde un archivo externo o definirlas aquí
+            // Por simplicidad, las dejaremos vacías pero aquí es donde se cargaría el HTML de cada sección
             loadSectionsContent();
-            updatePremiumUI();
             
-            // Aquí se inicializarían los componentes de la app como los gráficos, etc.
-            // Por ejemplo: initializeChartsAndData();
+            // Actualizar la UI basada en el estado premium
+            updatePremiumUI();
+
+            // Aquí iría el resto de la inicialización de la app (gráficos, eventos, etc.)
+            // Por ejemplo: renderMacroChart();
         }
 
         function loadSectionsContent() {
-            // Esta función cargaría el HTML de cada sección para mantener el código limpio.
-            // Por ahora, solo un marcador de posición.
+            // Aquí cargarías el HTML de cada sección para mantener el código limpio
+            // Ejemplo:
             document.getElementById('resumen').innerHTML = `
                 <div class="text-center mb-10">
                     <h2 class="text-3xl font-bold tracking-tight sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-white to-electric-cyan">Tu Panel de Control</h2>
-                    <p class="mt-4 text-lg text-gray-400">Aquí verás el resumen de tus objetivos y estado actual.</p>
+                    <p class="mt-4 text-lg text-gray-400">Resumen de tus objetivos y estado actual.</p>
                 </div>
-                <div class="card"><p>El contenido del panel de control irá aquí.</p></div>
+                <!-- El resto del contenido de resumen aquí -->
             `;
             // Repetir para las otras secciones...
         }
@@ -488,9 +496,15 @@
                 nonPremiumContent.classList.add('hidden');
                 const expiryDate = userData.premiumExpires.toDate().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
                 premiumExpiryEl.textContent = `Tu acceso expira el: ${expiryDate}`;
+                // Desbloquear features
+                document.querySelectorAll('.locked-feature').forEach(el => el.classList.remove('locked-feature'));
+                document.querySelectorAll('.locked-overlay').forEach(el => el.remove());
+
             } else {
                 premiumContent.classList.add('hidden');
                 nonPremiumContent.classList.remove('hidden');
+                // Bloquear features
+                // Ejemplo: document.getElementById('analyze-progress-btn').closest('.card').classList.add('locked-feature');
             }
         }
         
@@ -506,15 +520,14 @@
             const expiryDate = new Date();
             expiryDate.setMonth(expiryDate.getMonth() + 2); // Añadir 2 meses
             
-            const userDocRef = doc(db, "users", currentUser.uid);
-            await updateDoc(userDocRef, {
+            await updateDoc(doc(db, "users", currentUser.uid), {
                 isPremium: true,
                 premiumExpires: expiryDate
             });
             
             // Actualizar datos locales y UI
-            const updatedDoc = await getDoc(userDocRef);
-            userData = updatedDoc.data();
+            userData.isPremium = true;
+            userData.premiumExpires = { toDate: () => expiryDate }; // Simular objeto Timestamp de Firestore
             updatePremiumUI();
             showAlert('¡Felicidades! Tu plan Premium ha sido activado.', 'success');
         }
@@ -526,10 +539,10 @@
         document.getElementById('owner-code-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const code = document.getElementById('owner-code-input').value;
+            // El código secreto
             if (code === 'STEVENPRO') {
                 upgradeToPremium();
                 ownerCodeModal.style.display = 'none';
-                document.getElementById('owner-code-input').value = '';
             } else {
                 showAlert('Código incorrecto.', 'error');
             }
@@ -540,14 +553,13 @@
         const onlineUsersList = document.getElementById('online-users-list');
         document.getElementById('show-online-users-btn').addEventListener('click', () => {
             onlineUsersModal.style.display = 'flex';
+            // Empezar a escuchar a los usuarios en línea
             const presenceCollection = collection(db, "presence");
             unsubscribePresence = onSnapshot(presenceCollection, (snapshot) => {
                 let usersHTML = '';
                 snapshot.docs.forEach(doc => {
                     const user = doc.data();
-                    const lastSeen = user.last_seen?.toDate();
-                    // Considerar online si la última vez visto fue hace menos de 2 minutos
-                    if (lastSeen && (new Date() - lastSeen) < 120000) {
+                    if (user.status === 'online') {
                         usersHTML += `
                             <div class="flex items-center justify-between bg-gray-800 p-2 rounded-lg">
                                 <span class="text-gray-300">${user.email}</span>
@@ -564,6 +576,7 @@
         });
         document.getElementById('close-online-users-btn').addEventListener('click', () => {
             onlineUsersModal.style.display = 'none';
+            // Detener el listener para no consumir recursos innecesariamente
             if (unsubscribePresence) {
                 unsubscribePresence();
             }
@@ -601,6 +614,7 @@
             });
         });
         
+        // Cierre de modales AI
         document.getElementById('ai-modal-close').addEventListener('click', () => {
             document.getElementById('ai-modal').style.display = 'none';
         });
